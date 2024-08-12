@@ -272,6 +272,10 @@ const scopes = [
 		value: "project:nex·rpi",
 	},
 	{
+		name: "catalog:traefik - Anything related to Traefik Helm charts",
+		value: "catalog:traefik",
+	},
+	{
 		name: "gh              - Anything else",
 		value: "gh",
 	},

@@ -18,9 +18,10 @@
 
 # -- Install all required tools
 set -x
-mise use --global nodejs@lts rust@latest
+mise use --global golang@latest nodejs@lts rust@latest
 { set +x; } 2>/dev/null
 
+command -v go &>/dev/null || (echo >&2 'Go runtime is required to build the project (mise seems not properly configured on your device)' && exit 1)
 command -v npm &>/dev/null || (echo >&2 'Node.js runtime is required to build the project (mise seems not properly configured on your device)' && exit 1)
 command -v cargo &>/dev/null || (echo >&2 'Rust runtime is required to build the project (mise seems not properly configured on your device)' && exit 1)
 
