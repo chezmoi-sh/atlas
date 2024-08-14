@@ -28,3 +28,6 @@
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/direnv,dotenv,visualstudiocode
+
+# Ignore results of nix flake build/update
+**/result
