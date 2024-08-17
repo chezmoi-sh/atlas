@@ -89,7 +89,6 @@ rec {
         '';
       };
 
-      # TODO: Find a way to find this hash automatically
       vendorHash = "sha256-xQPDlwu/mRdyvZW0qSCA9eko9pOQAMwh2vVJWzMnyfs=";
       subPackages = [ "cmd/traefik" ];
 
