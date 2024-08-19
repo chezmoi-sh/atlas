@@ -1,0 +1,517 @@
+# Copyright (C) 2024 Alexandre Nicolaie (xunleii@users.noreply.github.com)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ----------------------------------------------------------------------------
+---
+# yaml-language-server: $schema=values.schema.json
+
+# @schema@
+# const: apps.chezmoi.sh/v1alpha1
+# description: The API version of the Application resource.
+# required: false
+# @schema@
+apiVersion: apps.chezmoi.sh/v1alpha1
+
+# @schema@
+# const: Application
+# description: The kind of the Application resource.
+# required: false
+# @schema@
+kind: Application
+
+# @schema@
+# required: false
+# @schema@
+# Common metadata for all resources.
+metadata:
+  # @schema@
+  # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations
+  # required: false
+  # @schema@
+  annotations: {}
+
+  # @schema@
+  # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels
+  # required: false
+  # @schema@
+  labels: {}
+
+# @schema@
+# required: false
+# @schema@
+# Specification of the desired behavior of the application.
+spec:
+
+  # (--- C O M M O N   T E M P L A T E ---)
+  # @schema@
+  # description: Additional POD customization that will be applied to all the pods.
+  # required: false
+  # @schema@
+  template:
+
+    # @schema@
+    # required: false
+    # @schema@
+    # Traefik pod template specification.
+    traefik:
+      # @schema@
+      # required: false
+      # @schema@
+      # Pod metadata specification.
+      metadata:
+        # @schema@
+        # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels
+        # required: false
+        # @schema@
+        labels: {}
+        # @schema@
+        # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations
+        # required: false
+        # @schema@
+        annotations: {}
+
+      # @schema@
+      # required: false
+      # @schema@
+      # Pod specification.
+      spec:
+        # @schema@
+        # required: false
+        # @schema@
+        # List of containers that will be run in the pod.
+        containers:
+          # @schema@
+          # required: false
+          # @schema@
+          # Traefik container specification.
+          traefik:
+            # @schema@
+            # required: false
+            # @schema@
+            # Container image reference to use.
+            image:
+              # @schema@
+              # required: false
+              # @schema@
+              # Container image repository.
+              repository: ghcr.io/chezmoi-sh/traefik
+
+              # @schema@
+              # required: false
+              # oneOf:
+              # - type: string
+              # - type: "null"
+              # @schema@
+              # Container image tag with optional sha256 digest.
+              tag: null
+
+              # @schema@
+              # required: false
+              # enum:
+              # - Always
+              # - IfNotPresent
+              # - Never
+              # @schema@
+              # Container image pull policy.
+              pullPolicy: IfNotPresent
+
+            # @schema@
+            # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/container-v1.json#/properties/resources
+            # required: false
+            # @schema@
+            resources: {}
+
+
+  # (--- S C E D U L I N G   S P E C I F I C A T I O N ---)
+  # @schema@
+  # description: Specification of the desired scheduling behavior.
+  # required: false
+  # @schema@
+  scheduling:
+    # @schema@
+    # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/affinity
+    # required: false
+    # @schema@
+    affinity: {}
+
+    # @schema@
+    # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/tolerations
+    # required: false
+    # @schema@
+    tolerations: []
+
+    # @schema@
+    # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/nodeSelector
+    # required: false
+    # @schema@
+    nodeSelector: {}
+
+    # @schema@
+    # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/priorityClassName
+    # required: false
+    # @schema@
+    priorityClassName: ""
+
+
+  # (--- A U T O S C A L I N G   S P E C I F I C A T I O N ---)
+  # @schema@
+  # description: Specification of the desired autoscaling behavior.
+  # required: false
+  # @schema@
+  autoscaling:
+    # @schema@
+    # minimum: 1
+    # @schema@
+    # The lower limit for the number of replicas to which the autoscaler can scale down.
+    minReplicas: 1
+
+    # @schema@
+    # required: false
+    # @schema@
+    # The upper limit for the number of replicas to which the autoscaler can scale up.
+    maxReplicas: 1
+
+    # @schema@
+    # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/horizontalpodautoscalerspec-autoscaling-v2.json#/properties/behavior
+    # required: false
+    # @schema@
+    behavior: {}
+
+    # @schema@
+    # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/horizontalpodautoscalerspec-autoscaling-v2.json#/properties/metrics
+    # @schema@
+    metrics: []
+
+  # (--- D I S T R U P T I O N   B U D G E T   S P E C I F I C A T I O N ---)
+  # @schema@
+  # description: Specification of the desired limit of number of concurent distribution that the application experiences.
+  # required: false
+  # oneOf:
+  # - requiredProperties: ["maxUnavailable"]
+  #   not:
+  #     requiredProperties: ["minAvailable"]
+  #   properties:
+  #     maxUnavailable:
+  #       type: integer
+  #       minimum: 0
+  # - requiredProperties: ["minAvailable"]
+  #   not:
+  #     requiredProperties: ["maxUnavailable"]
+  #   properties:
+  #     minAvailable:
+  #       type: integer
+  #       minimum: 0
+  # @schema@
+  distruptionBudget:
+    # @schema@
+    # oneOf:
+    # - type: integer
+    #   minimum: 0
+    # - type: "null"
+    # @schema@
+    # The maximum number of pods that can be unavailable during the disruption.
+    maxUnavailable: null
+
+    # @schema@
+    # oneOf:
+    # - type: integer
+    #   minimum: 0
+    # - type: "null"
+    # @schema@
+    # The minimum number of pods that must still be available during the disruption.
+    minAvailable: null
+
+    # @schema@
+    # enum:
+    # - "IfHealthyBudget"
+    # - "AlwaysAllow"
+    # required: false
+    # @schema@
+    # Defines the criteria for when unhealthy pods should be considered for eviction.
+    unhealthyPodEvictionPolicy: AlwaysAllow
+
+  # (--- S E R V I C E   S P E C I F I C A T I O N ---)
+  # @schema@
+  # description: Specification of how the application should be exposed.
+  # required: false
+  # @schema@
+  service:
+    # @schema@
+    # required: false
+    # @schema@
+    # Specifies the service to create (aka. v1/Service object).
+    endpoints:
+      # @schema@
+      # required: false
+      # @schema@
+      # Additional service metadata.
+      metadata:
+        # @schema@
+        # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations
+        # required: false
+        # @schema@
+        annotations: {}
+
+        # @schema@
+        # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels
+        # required: false
+        # @schema@
+        labels: {}
+
+      # @schema@
+      # required: false
+      # properties: {}
+      # patternProperties:
+      #  ^[a-z0-9.-]+$:
+      #    type: object
+      #    properties:
+      #      appProtocol:
+      #        description: The application protocol used as hint for implementation to offer behavior for protocols that they understand.
+      #        type: string
+      #      port:
+      #        description: The port number the service should expose.
+      #        type: integer
+      #        minimum: 0
+      #      protocol:
+      #        description: The protocol the service should expose.
+      #        enum: [TCP, UDP]
+      #        default: TCP
+      #      exposeAs:
+      #        description: Type of service to expose as.
+      #        type: array
+      #        items:
+      #          type: string
+      #          enum: [ClusterIP, NodePort, LoadBalancer, ExternalName]
+      #    requiredProperties: [appProtocol, port, protocol, exposeAs]
+      # @schema@
+      # Ports that the service should expose.
+      ports:
+        web:
+          port: 80
+          protocol: TCP
+          appProtocol: http
+          exposeAs:
+            - ClusterIP
+            - LoadBalancer
+        websecure:
+          port: 443
+          protocol: TCP
+          appProtocol: https
+          exposeAs:
+            - ClusterIP
+            - LoadBalancer
+        traefik:
+          port: 9000
+          protocol: TCP
+          appProtocol: http
+          exposeAs:
+            - ClusterIP
+        metrics:
+          port: 9100
+          protocol: TCP
+          appProtocol: http
+          exposeAs:
+            - ClusterIP
+
+    # @schema@
+    # required: false
+    # @schema@
+    # Configures the LoadBalancer service if any ports are exposed as LoadBalancer.
+    loadBalancer:
+      # @schema@
+      # required: false
+      # @schema@
+      # Additional service metadata.
+      metadata:
+        # @schema@
+        # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations
+        # required: false
+        # @schema@
+        annotations: {}
+
+        # @schema@
+        # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels
+        # required: false
+        # @schema@
+        labels: {}
+
+      # @schema@
+      # required: false
+      # properties:
+      #   allocateLoadBalancerNodePorts:
+      #     title: allocateLoadBalancerNodePorts
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/allocateLoadBalancerNodePorts
+      #   externalTrafficPolicy:
+      #     title: externalTrafficPolicy
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/externalTrafficPolicy
+      #     enum: [Cluster, Local]
+      #   healthCheckNodePort:
+      #     title: healthCheckNodePort
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/healthCheckNodePort
+      #   ipFamilies:
+      #     title: ipFamilies
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/ipFamilies
+      #     type: array
+      #     items: {enum: [IPv4, IPv6]}
+      #   ipFamilyPolicy:
+      #     title: ipFamilyPolicy
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/ipFamilyPolicy
+      #     enum: [SingleStack, MultipleStacks]
+      #   loadBalancerClass:
+      #     title: loadBalancerClass
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/loadBalancerClass
+      #   loadBalancerSourceRanges:
+      #     title: loadBalancerSourceRanges
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/loadBalancerSourceRanges
+      #   publishNotReadyAddresses:
+      #     title: publishNotReadyAddresses
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/publishNotReadyAddresses
+      #   sessionAffinity:
+      #     title: sessionAffinity
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/sessionAffinity
+      #     enum: [None, ClientIP]
+      #   trafficDistribution:
+      #     title: trafficDistribution
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/trafficDistribution
+      # @schema@
+      # LoadBalancer service specification.
+      spec: {}
+
+    # @schema@
+    # required: false
+    # @schema@
+    # Configures the ExternalName service if any ports are exposed as ExternalName.
+    externalName:
+      # @schema@
+      # required: false
+      # @schema@
+      # Additional service metadata.
+      metadata:
+        # @schema@
+        # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations
+        # required: false
+        # @schema@
+        annotations: {}
+
+        # @schema@
+        # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels
+        # required: false
+        # @schema@
+        labels: {}
+
+      # @schema@
+      # required: false
+      # properties:
+      #   externalName:
+      #     title: externalName
+      #     type: string
+      #   externalTrafficPolicy:
+      #     title: externalTrafficPolicy
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/externalTrafficPolicy
+      #     enum: [Cluster, Local]
+      #   publishNotReadyAddresses:
+      #     title: publishNotReadyAddresses
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/publishNotReadyAddresses
+      # @schema@
+      # ExternalName service specification.
+      spec: {}
+
+      # @schema@
+      # required: false
+      # @schema@
+      # Configures the NodePort service if any ports are exposed as NodePort.
+      nodePort:
+        # @schema@
+        # required: false
+        # @schema@
+        # Additional service metadata.
+        metadata:
+          # @schema@
+          # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations
+          # required: false
+          # @schema@
+          annotations: {}
+
+          # @schema@
+          # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels
+          # required: false
+          # @schema@
+          labels: {}
+
+      # @schema@
+      # required: false
+      # @schema@
+      # Configures the ClusterIP service if any ports are exposed as ClusterIP.
+      clusterIP:
+        # @schema@
+        # required: false
+        # @schema@
+        # Additional service metadata.
+        metadata:
+          # @schema@
+          # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations
+          # required: false
+          # @schema@
+          annotations: {}
+
+          # @schema@
+          # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels
+          # required: false
+          # @schema@
+          labels: {}
+
+        # @schema@
+        # required: false
+        # properties:
+        #   clusterIP:
+        #     title: clusterIP
+        #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/clusterIP
+        #   clusterIPs:
+        #     title: clusterIPs
+        #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/clusterIPs
+        #   externalTrafficPolicy:
+        #     title: externalTrafficPolicy
+        #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/externalTrafficPolicy
+        #     enum: [Cluster, Local]
+        #   publishNotReadyAddresses:
+        #     title: publishNotReadyAddresses
+        #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/publishNotReadyAddresses
+        # @schema@
+        # ClusterIP service specification.
+        spec: {}
+
+
+  # (--- A P P L I C A T I O N   C O N F I G U R A T I O N ---)
+  # @schema@
+  # description: Traefik configuration. See https://doc.traefik.io/traefik/reference/static-configuration/file/ for more details.
+  # $ref: https://json.schemastore.org/traefik-v2.json
+  # required: false
+  # default: {}
+  # @schema@
+  traefik:
+    api:
+      dashboard: true
+      insecure: true
+    entryPoints:
+      web:
+        address: :8080
+      websecure:
+        address: :8443
+      traefik:
+        address: :9000
+      metrics:
+        address: :9100
+    providers:
+      kubernetesIngress: {}
+      kubernetesCRD: {}
+      kubernetesGateway: {}

@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=values.schema.json
+
+apiVersion: apps.chezmoi.sh/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    additional.chezmoi.io/example: ...
+  labels:
+    additional.chezmoi.io/example: ...
+spec:
+  service:
+    endpoints:
+      metadata:
+        annotations:
+          

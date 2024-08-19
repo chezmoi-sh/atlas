@@ -1,0 +1,491 @@
+{
+	"additionalProperties": false,
+	"properties": {
+		"apiVersion": {
+			"default": "apps.chezmoi.sh/v1alpha1",
+			"const": "apps.chezmoi.sh/v1alpha1",
+			"description": "The API version of the Application resource.",
+			"title": "apiVersion"
+		},
+		"global": {
+			"description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+			"title": "global",
+			"type": "object"
+		},
+		"kind": {
+			"default": "Application",
+			"const": "Application",
+			"description": "The kind of the Application resource.",
+			"title": "kind"
+		},
+		"metadata": {
+			"additionalProperties": false,
+			"properties": {
+				"annotations": {
+					"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+				},
+				"labels": {
+					"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
+				}
+			},
+			"description": "Common metadata for all resources.",
+			"title": "metadata"
+		},
+		"spec": {
+			"additionalProperties": false,
+			"properties": {
+				"autoscaling": {
+					"additionalProperties": false,
+					"properties": {
+						"behavior": {
+							"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/horizontalpodautoscalerspec-autoscaling-v2.json#/properties/behavior"
+						},
+						"maxReplicas": {
+							"default": "1",
+							"description": "The upper limit for the number of replicas to which the autoscaler can scale up.",
+							"title": "maxReplicas"
+						},
+						"metrics": {
+							"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/horizontalpodautoscalerspec-autoscaling-v2.json#/properties/metrics"
+						},
+						"minReplicas": {
+							"default": "1",
+							"minimum": 1,
+							"description": "The lower limit for the number of replicas to which the autoscaler can scale down.",
+							"title": "minReplicas"
+						}
+					},
+					"description": "Specification of the desired autoscaling behavior.",
+					"title": "autoscaling"
+				},
+				"distruptionBudget": {
+					"additionalProperties": false,
+					"properties": {
+						"maxUnavailable": {
+							"default": "null",
+							"description": "The maximum number of pods that can be unavailable during the disruption.",
+							"title": "maxUnavailable",
+							"oneOf": [
+								{
+									"minimum": 0,
+									"type": "integer"
+								},
+								{
+									"type": "null"
+								}
+							]
+						},
+						"minAvailable": {
+							"default": "null",
+							"description": "The minimum number of pods that must still be available during the disruption.",
+							"title": "minAvailable",
+							"oneOf": [
+								{
+									"minimum": 0,
+									"type": "integer"
+								},
+								{
+									"type": "null"
+								}
+							]
+						},
+						"unhealthyPodEvictionPolicy": {
+							"default": "AlwaysAllow",
+							"description": "Defines the criteria for when unhealthy pods should be considered for eviction.",
+							"title": "unhealthyPodEvictionPolicy",
+							"enum": ["IfHealthyBudget", "AlwaysAllow"]
+						}
+					},
+					"description": "Specification of the desired limit of number of concurent distribution that the application experiences.",
+					"title": "distruptionBudget",
+					"oneOf": [
+						{
+							"properties": {
+								"maxUnavailable": {
+									"minimum": 0,
+									"type": "integer"
+								}
+							},
+							"not": {
+								"required": ["minAvailable"]
+							},
+							"required": ["maxUnavailable"]
+						},
+						{
+							"properties": {
+								"minAvailable": {
+									"minimum": 0,
+									"type": "integer"
+								}
+							},
+							"not": {
+								"required": ["maxUnavailable"]
+							},
+							"required": ["minAvailable"]
+						}
+					]
+				},
+				"scheduling": {
+					"additionalProperties": false,
+					"properties": {
+						"affinity": {
+							"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/affinity"
+						},
+						"nodeSelector": {
+							"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/nodeSelector"
+						},
+						"priorityClassName": {
+							"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/priorityClassName"
+						},
+						"tolerations": {
+							"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/tolerations"
+						}
+					},
+					"description": "Specification of the desired scheduling behavior.",
+					"title": "scheduling"
+				},
+				"service": {
+					"additionalProperties": false,
+					"properties": {
+						"endpoints": {
+							"additionalProperties": false,
+							"properties": {
+								"metadata": {
+									"additionalProperties": false,
+									"properties": {
+										"annotations": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+										},
+										"labels": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
+										}
+									},
+									"description": "Additional service metadata.",
+									"title": "metadata"
+								},
+								"ports": {
+									"additionalProperties": false,
+									"patternProperties": {
+										"^[a-z0-9.-]+$": {
+											"properties": {
+												"appProtocol": {
+													"description": "The application protocol used as hint for implementation to offer behavior for protocols that they understand.",
+													"type": "string"
+												},
+												"exposeAs": {
+													"items": {
+														"type": "string",
+														"enum": [
+															"ClusterIP",
+															"NodePort",
+															"LoadBalancer",
+															"ExternalName"
+														]
+													},
+													"description": "Type of service to expose as.",
+													"type": "array"
+												},
+												"port": {
+													"minimum": 0,
+													"description": "The port number the service should expose.",
+													"type": "integer"
+												},
+												"protocol": {
+													"default": "TCP",
+													"description": "The protocol the service should expose.",
+													"enum": ["TCP", "UDP"]
+												}
+											},
+											"type": "object",
+											"required": [
+												"appProtocol",
+												"port",
+												"protocol",
+												"exposeAs"
+											]
+										}
+									},
+									"description": "Ports that the service should expose.",
+									"title": "ports"
+								}
+							},
+							"description": "Specifies the service to create (aka. v1/Service object).",
+							"title": "endpoints"
+						},
+						"externalName": {
+							"additionalProperties": false,
+							"properties": {
+								"clusterIP": {
+									"additionalProperties": false,
+									"properties": {
+										"metadata": {
+											"additionalProperties": false,
+											"properties": {
+												"annotations": {
+													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+												},
+												"labels": {
+													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
+												}
+											},
+											"description": "Additional service metadata.",
+											"title": "metadata"
+										},
+										"spec": {
+											"additionalProperties": false,
+											"properties": {
+												"clusterIP": {
+													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/clusterIP",
+													"title": "clusterIP"
+												},
+												"clusterIPs": {
+													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/clusterIPs",
+													"title": "clusterIPs"
+												},
+												"externalTrafficPolicy": {
+													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/externalTrafficPolicy",
+													"title": "externalTrafficPolicy",
+													"enum": ["Cluster", "Local"]
+												},
+												"publishNotReadyAddresses": {
+													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/publishNotReadyAddresses",
+													"title": "publishNotReadyAddresses"
+												}
+											},
+											"description": "ClusterIP service specification.",
+											"title": "spec"
+										}
+									},
+									"description": "Configures the ClusterIP service if any ports are exposed as ClusterIP.",
+									"title": "clusterIP"
+								},
+								"metadata": {
+									"additionalProperties": false,
+									"properties": {
+										"annotations": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+										},
+										"labels": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
+										}
+									},
+									"description": "Additional service metadata.",
+									"title": "metadata"
+								},
+								"nodePort": {
+									"additionalProperties": false,
+									"properties": {
+										"metadata": {
+											"additionalProperties": false,
+											"properties": {
+												"annotations": {
+													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+												},
+												"labels": {
+													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
+												}
+											},
+											"description": "Additional service metadata.",
+											"title": "metadata"
+										}
+									},
+									"description": "Configures the NodePort service if any ports are exposed as NodePort.",
+									"title": "nodePort"
+								},
+								"spec": {
+									"additionalProperties": false,
+									"properties": {
+										"externalName": {
+											"title": "externalName",
+											"type": "string"
+										},
+										"externalTrafficPolicy": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/externalTrafficPolicy",
+											"title": "externalTrafficPolicy",
+											"enum": ["Cluster", "Local"]
+										},
+										"publishNotReadyAddresses": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/publishNotReadyAddresses",
+											"title": "publishNotReadyAddresses"
+										}
+									},
+									"description": "ExternalName service specification.",
+									"title": "spec"
+								}
+							},
+							"description": "Configures the ExternalName service if any ports are exposed as ExternalName.",
+							"title": "externalName"
+						},
+						"loadBalancer": {
+							"additionalProperties": false,
+							"properties": {
+								"metadata": {
+									"additionalProperties": false,
+									"properties": {
+										"annotations": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+										},
+										"labels": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
+										}
+									},
+									"description": "Additional service metadata.",
+									"title": "metadata"
+								},
+								"spec": {
+									"additionalProperties": false,
+									"properties": {
+										"allocateLoadBalancerNodePorts": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/allocateLoadBalancerNodePorts",
+											"title": "allocateLoadBalancerNodePorts"
+										},
+										"externalTrafficPolicy": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/externalTrafficPolicy",
+											"title": "externalTrafficPolicy",
+											"enum": ["Cluster", "Local"]
+										},
+										"healthCheckNodePort": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/healthCheckNodePort",
+											"title": "healthCheckNodePort"
+										},
+										"ipFamilies": {
+											"items": {
+												"enum": ["IPv4", "IPv6"]
+											},
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/ipFamilies",
+											"title": "ipFamilies",
+											"type": "array"
+										},
+										"ipFamilyPolicy": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/ipFamilyPolicy",
+											"title": "ipFamilyPolicy",
+											"enum": ["SingleStack", "MultipleStacks"]
+										},
+										"loadBalancerClass": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/loadBalancerClass",
+											"title": "loadBalancerClass"
+										},
+										"loadBalancerSourceRanges": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/loadBalancerSourceRanges",
+											"title": "loadBalancerSourceRanges"
+										},
+										"publishNotReadyAddresses": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/publishNotReadyAddresses",
+											"title": "publishNotReadyAddresses"
+										},
+										"sessionAffinity": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/sessionAffinity",
+											"title": "sessionAffinity",
+											"enum": ["None", "ClientIP"]
+										},
+										"trafficDistribution": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/trafficDistribution",
+											"title": "trafficDistribution"
+										}
+									},
+									"description": "LoadBalancer service specification.",
+									"title": "spec"
+								}
+							},
+							"description": "Configures the LoadBalancer service if any ports are exposed as LoadBalancer.",
+							"title": "loadBalancer"
+						}
+					},
+					"description": "Specification of how the application should be exposed.",
+					"title": "service"
+				},
+				"template": {
+					"additionalProperties": false,
+					"properties": {
+						"traefik": {
+							"additionalProperties": false,
+							"properties": {
+								"metadata": {
+									"additionalProperties": false,
+									"properties": {
+										"annotations": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+										},
+										"labels": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
+										}
+									},
+									"description": "Pod metadata specification.",
+									"title": "metadata"
+								},
+								"spec": {
+									"additionalProperties": false,
+									"properties": {
+										"containers": {
+											"additionalProperties": false,
+											"properties": {
+												"traefik": {
+													"additionalProperties": false,
+													"properties": {
+														"image": {
+															"additionalProperties": false,
+															"properties": {
+																"pullPolicy": {
+																	"default": "IfNotPresent",
+																	"description": "Container image pull policy.",
+																	"title": "pullPolicy",
+																	"enum": ["Always", "IfNotPresent", "Never"]
+																},
+																"repository": {
+																	"default": "ghcr.io/chezmoi-sh/traefik",
+																	"description": "Container image repository.",
+																	"title": "repository"
+																},
+																"tag": {
+																	"default": "null",
+																	"description": "Container image tag with optional sha256 digest.",
+																	"title": "tag",
+																	"oneOf": [
+																		{
+																			"type": "string"
+																		},
+																		{
+																			"type": "null"
+																		}
+																	]
+																}
+															},
+															"description": "Container image reference to use.",
+															"title": "image"
+														},
+														"resources": {
+															"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/container-v1.json#/properties/resources"
+														}
+													},
+													"description": "Traefik container specification.",
+													"title": "traefik"
+												}
+											},
+											"description": "List of containers that will be run in the pod.",
+											"title": "containers"
+										}
+									},
+									"description": "Pod specification.",
+									"title": "spec"
+								}
+							},
+							"description": "Traefik pod template specification.",
+							"title": "traefik"
+						}
+					},
+					"description": "Additional POD customization that will be applied to all the pods.",
+					"title": "template"
+				},
+				"traefik": {
+					"default": {},
+					"$ref": "https://json.schemastore.org/traefik-v2.json",
+					"description": "Traefik configuration. See https://doc.traefik.io/traefik/reference/static-configuration/file/ for more details."
+				}
+			},
+			"description": "Specification of the desired behavior of the application.",
+			"title": "spec"
+		}
+	},
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"type": "object"
+}
