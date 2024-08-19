@@ -1,1 +1,0 @@
-../../../../../../../.bats/snippets/chezmoi.sh-compliance.docker.bats
