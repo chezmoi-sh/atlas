@@ -1,0 +1,80 @@
+{{- $hasGatewayAPI := or (.Capabilities.APIVersions.Has "gateway.networking.k8s.io/v1") (.Capabilities.APIVersions.Has "gateway.networking.k8s.io/v1beta1") (.Capabilities.APIVersions.Has "gateway.networking.k8s.io/v1alpha2") (.Capabilities.APIVersions.Has "gateway.networking.k8s.io/v1alpha3") -}}
+{{- $traefikIngressEnabled := hasKey (.Values.spec.traefik.providers | default dict) "kubernetesIngress" -}}
+{{- $traefikGatewayEnabled := hasKey (.Values.spec.traefik.providers | default dict) "kubernetesGateway" -}}
+{{- $traefikCRDEnabled := hasKey (.Values.spec.traefik.providers | default dict) "kubernetesCRD" -}}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  {{- with .Values.metadata.annotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels: {{ include "release.labels" . | nindent 4 }}
+  name: {{ include "rbac.role.prefix" . }}:traefik
+  namespace: {{ .Release.Namespace }}
+rules:
+  - apiGroups: [""]
+    resources: ["nodes", "services", "secrets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["discovery.k8s.io"]
+    resources: ["endpointslices"]
+    verbs: ["list", "watch"]
+  {{- if $traefikIngressEnabled -}}
+  - apiGroups: ["extensions", "networking.k8s.io"]
+    resources: ["ingressclasses", "ingresses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["extensions", "networking.k8s.io"]
+    resources: ["ingresses/status"]
+    verbs: ["update"]
+  {{- end -}}
+  {{- if and $traefikGatewayEnabled $hasGatewayAPI -}}
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["list", "watch"]
+  - apiGroups: [gateway.networking.k8s.io]
+    resources:
+      - gatewayclasses
+      - gateways
+      - httproutes
+      - referencegrants
+      - tcproutes
+      - tlsroutes
+    verbs: [get, list, watch]
+  - apiGroups: [gateway.networking.k8s.io]
+    resources:
+      - gatewayclasses/status
+      - gateways/status
+      - httproutes/status
+      - tcproutes/status
+      - tlsroutes/status
+    verbs: [update]
+  {{- end -}}
+{{- if $traefikCRDEnabled }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  {{- with .Values.metadata.annotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels: {{ include "release.labels" . | nindent 4 }}
+    rbac.authorization.k8s.io/aggregate-to-admin: "true"
+    rbac.authorization.k8s.io/aggregate-to-edit: "true"
+    rbac.authorization.k8s.io/aggregate-to-view: "true"
+  name: {{ include "rbac.role.prefix" . }}:traefik-crds
+  namespace: {{ .Release.Namespace }}
+rules:
+  - apiGroups: [traefik.io]
+    resources:
+      - ingressroutes
+      - ingressroutetcps
+      - ingressrouteudps
+      - middlewares
+      - middlewaretcps
+      - serverstransports
+      - serverstransporttcps
+      - tlsoptions
+      - tlsstores
+      - traefikservices
+    verbs: [get, list, watch]
+{{- end }}

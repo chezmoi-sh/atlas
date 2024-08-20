@@ -60,66 +60,40 @@
 				},
 				"distruptionBudget": {
 					"additionalProperties": false,
+					"default": "false",
 					"properties": {
 						"maxUnavailable": {
-							"default": "null",
+							"minimum": 0,
 							"description": "The maximum number of pods that can be unavailable during the disruption.",
-							"title": "maxUnavailable",
-							"oneOf": [
-								{
-									"minimum": 0,
-									"type": "integer"
-								},
-								{
-									"type": "null"
-								}
-							]
+							"type": "integer"
 						},
 						"minAvailable": {
-							"default": "null",
+							"minimum": 0,
 							"description": "The minimum number of pods that must still be available during the disruption.",
-							"title": "minAvailable",
-							"oneOf": [
-								{
-									"minimum": 0,
-									"type": "integer"
-								},
-								{
-									"type": "null"
-								}
-							]
+							"type": "integer"
 						},
 						"unhealthyPodEvictionPolicy": {
-							"default": "AlwaysAllow",
 							"description": "Defines the criteria for when unhealthy pods should be considered for eviction.",
-							"title": "unhealthyPodEvictionPolicy",
 							"enum": ["IfHealthyBudget", "AlwaysAllow"]
 						}
 					},
 					"description": "Specification of the desired limit of number of concurent distribution that the application experiences.",
 					"title": "distruptionBudget",
-					"oneOf": [
+					"type": ["object", "boolean"],
+					"anyOf": [
 						{
 							"properties": {
-								"maxUnavailable": {
-									"minimum": 0,
-									"type": "integer"
+								"minAvailable": {
+									"not": {}
 								}
-							},
-							"not": {
-								"required": ["minAvailable"]
 							},
 							"required": ["maxUnavailable"]
 						},
 						{
 							"properties": {
-								"minAvailable": {
-									"minimum": 0,
-									"type": "integer"
+								"maxUnavailable": {
+									"not": {}
 								}
-							},
-							"not": {
-								"required": ["maxUnavailable"]
 							},
 							"required": ["minAvailable"]
 						}

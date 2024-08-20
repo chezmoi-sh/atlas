@@ -139,7 +139,8 @@
 				"Terrastruct.d2",
 				"trunk.io",
 				"visualstudioexptteam.vscodeintellicode",
-				"nefrob.vscode-just-syntax"
+				"nefrob.vscode-just-syntax",
+				"ms-kubernetes-tools.vscode-kubernetes-tools"
 			]
 		}
 	},

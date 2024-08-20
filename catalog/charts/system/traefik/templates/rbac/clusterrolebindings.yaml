@@ -1,0 +1,38 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  {{- with .Values.metadata.annotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels: {{ include "release.labels" . | nindent 4 }}
+  name: {{ include "rbac.role.prefix" . }}:traefik
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "rbac.role.prefix" . }}:traefik
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "release.name" . }}
+    namespace: {{ .Release.Namespace }}
+{{- if hasKey (.Values.spec.traefik.providers | default dict) "kubernetesCRD" }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  {{- with .Values.metadata.annotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels: {{ include "release.labels" . | nindent 4 }}
+  name: {{ include "rbac.role.prefix" . }}:traefik-crds
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "rbac.role.prefix" . }}:traefik-crds
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "release.name" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end -}}

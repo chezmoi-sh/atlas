@@ -192,53 +192,38 @@ spec:
     # @schema@
     metrics: []
 
+
   # (--- D I S T R U P T I O N   B U D G E T   S P E C I F I C A T I O N ---)
   # @schema@
   # description: Specification of the desired limit of number of concurent distribution that the application experiences.
+  # type: [object, boolean]
+  # properties:
+  #   maxUnavailable:
+  #     description: The maximum number of pods that can be unavailable during the disruption.
+  #     type: integer
+  #     minimum: 0
+  #   minAvailable:
+  #     description: The minimum number of pods that must still be available during the disruption.
+  #     type: integer
+  #     minimum: 0
+  #   unhealthyPodEvictionPolicy:
+  #     description: Defines the criteria for when unhealthy pods should be considered for eviction.
+  #     enum:
+  #     - "IfHealthyBudget"
+  #     - "AlwaysAllow"
   # required: false
-  # oneOf:
-  # - requiredProperties: ["maxUnavailable"]
-  #   not:
-  #     requiredProperties: ["minAvailable"]
+  # anyOf:
+  # - requiredProperties: [maxUnavailable]
   #   properties:
-  #     maxUnavailable:
-  #       type: integer
-  #       minimum: 0
-  # - requiredProperties: ["minAvailable"]
-  #   not:
-  #     requiredProperties: ["maxUnavailable"]
+  #     minAvailable: {not: {}}
+  # - requiredProperties: [minAvailable]
   #   properties:
-  #     minAvailable:
-  #       type: integer
-  #       minimum: 0
+  #     maxUnavailable: {not: {}}
+  # requiredProperties: []
+  # additionalProperties: false
   # @schema@
-  distruptionBudget:
-    # @schema@
-    # oneOf:
-    # - type: integer
-    #   minimum: 0
-    # - type: "null"
-    # @schema@
-    # The maximum number of pods that can be unavailable during the disruption.
-    maxUnavailable: null
+  distruptionBudget: false
 
-    # @schema@
-    # oneOf:
-    # - type: integer
-    #   minimum: 0
-    # - type: "null"
-    # @schema@
-    # The minimum number of pods that must still be available during the disruption.
-    minAvailable: null
-
-    # @schema@
-    # enum:
-    # - "IfHealthyBudget"
-    # - "AlwaysAllow"
-    # required: false
-    # @schema@
-    # Defines the criteria for when unhealthy pods should be considered for eviction.
-    unhealthyPodEvictionPolicy: AlwaysAllow
 
   # (--- S E R V I C E   S P E C I F I C A T I O N ---)
   # @schema@
@@ -511,7 +496,14 @@ spec:
         address: :9000
       metrics:
         address: :9100
+    global:
+      checkNewVersion: false
+      sendAnonymousUsage: false
+    log:
+      level: INFO
+    metrics:
+      prometheus:
+        entryPoint: metrics
     providers:
-      kubernetesIngress: {}
       kubernetesCRD: {}
       kubernetesGateway: {}

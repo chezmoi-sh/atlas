@@ -3,16 +3,17 @@
 # To learn more about the format of this file, see https://docs.trunk.io/reference/trunk-yaml
 version: 0.1
 cli:
-    version: 1.22.2
+    version: 1.22.3
 # Trunk provides extensibility via plugins. (https://docs.trunk.io/plugins)
 plugins:
     sources:
         - id: trunk
-          ref: v1.6.1
+          ref: v1.6.2
           uri: https://github.com/trunk-io/plugins
 # Many linters and tools depend on runtimes - configure them here. (https://docs.trunk.io/runtimes)
 runtimes:
     enabled:
+        - rust@1.71.1
         - go@1.21.0
         - node@18.12.1
         - python@3.10.8
@@ -36,9 +37,10 @@ lint:
         - terrascan
         - trunk-toolbox
     enabled:
+        - nixpkgs-fmt@1.3.0
         - actionlint@1.7.1
         - biome@1.8.3
-        - checkov@3.2.219
+        - checkov@3.2.234
         - git-diff-check
         - hadolint@2.12.0
         - markdown-link-check@3.12.2
@@ -46,15 +48,15 @@ lint:
         - osv-scanner@1.8.3
         - oxipng@9.1.2
         - remark-lint@12.0.1
-        - renovate@38.23.2
-        - ruff@0.5.7
+        - renovate@38.44.3
+        - ruff@0.6.1
         - shellcheck@0.10.0
         - shfmt@3.6.0
         - sort-package-json@2.10.0
         - svgo@3.3.2
         - taplo@0.9.3
         - trivy@0.54.1
-        - trufflehog@3.81.7
+        - trufflehog@3.81.9
         - yamllint@1.35.1
     ignore:
         - linters: [ALL]
@@ -63,6 +65,10 @@ lint:
         - linters: [svgo]
           paths:
               - projects/**/assets/architecture.svg
+        - linters: [yamllint]
+          paths:
+              - catalog/charts/**/templates/*.yaml
+              - catalog/charts/**/templates/**/*.yaml
 actions:
     disabled:
         - trunk-announce

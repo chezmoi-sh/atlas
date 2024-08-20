@@ -55,12 +55,13 @@
               helm-schema
               pkgs.bashInteractive
               pkgs.bats
+              pkgs.chart-testing
               pkgs.commitlint
               pkgs.d2
               pkgs.devcontainer
               pkgs.docker-client
               pkgs.gum
-              pkgs.helm
+              pkgs.kubernetes-helm
               pkgs.helm-docs
               pkgs.just
               pkgs.k3d
