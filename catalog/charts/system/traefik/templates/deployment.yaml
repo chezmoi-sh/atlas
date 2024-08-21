@@ -1,0 +1,37 @@
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {{ include "release.annotations.indent" . }}
+  labels: {{ include "release.labels" . | nindent 4 }}
+  name: {{ include "release.name" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  {{- if eq (default .Values.spec.autoscaling.maxReplicas .Values.spec.autoscaling.minReplicas) .Values.spec.autoscaling.minReplicas }}
+  replicas: {{ .Values.spec.autoscaling.minReplicas }}
+  {{- end }}
+  selector:
+    matchLabels: {{ include "release.labels.selector" . | nindent 6 }}
+  template:
+    # missing pod annotations/labels
+    metadata:
+      labels: {{ include "release.labels.selector" . | nindent 8 }}
+    spec:
+      containers:
+      - name: traefik
+        image: {{ .Values.spec.template.traefik.spec.containers.traefik.image.repository }}:{{ default .Values.spec.template.traefik.spec.containers.traefik.image.tag .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.spec.template.traefik.spec.containers.traefik.image.pullPolicy }}
+        # generates ports from traefik configuration
+        # generates flags from traefik configuration (converts to --flag value)
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ALL]
+          privileged: false
+          readOnlyRootFilesystem: true
+      securityContext:
+        fsGroup: 22760
+        runAsGroup: 22760
+        runAsNonRoot: true
+        runAsUser: 44782

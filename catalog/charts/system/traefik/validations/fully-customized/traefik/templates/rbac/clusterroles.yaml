@@ -1,14 +1,19 @@
-{{- $traefikIngressEnabled := hasKey (.Values.spec.traefik.providers | default dict) "kubernetesIngress" -}}
-{{- $traefikGatewayEnabled := hasKey (.Values.spec.traefik.providers | default dict) "kubernetesGateway" -}}
-{{- $traefikCRDEnabled := hasKey (.Values.spec.traefik.providers | default dict) "kubernetesCRD" -}}
 ---
+# Source: traefik/templates/rbac/clusterroles.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  annotations: {{ include "release.annotations.indent" . }}
-  labels: {{ include "release.labels" . | nindent 4 }}
-  name: {{ include "rbac.role.prefix" . }}:traefik
-  namespace: {{ .Release.Namespace }}
+  annotations: 
+    custom.chezmoi.sh/everywhere: "true"
+  labels: 
+    app.kubernetes.io/name: traefik-fully-customized
+    app.kubernetes.io/instance: fully-customized
+    app.kubernetes.io/version: "v3.1.2"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: traefik-0.1.0
+    custom.chezmoi.sh/everywhere: "true"
+  name: traefik:default-fully-customized:traefik
+  namespace: default
 rules:
   - apiGroups: [""]
     resources: ["nodes", "services", "secrets"]
@@ -16,15 +21,12 @@ rules:
   - apiGroups: ["discovery.k8s.io"]
     resources: ["endpointslices"]
     verbs: ["list", "watch"]
-  {{- if $traefikIngressEnabled }}
   - apiGroups: ["extensions", "networking.k8s.io"]
     resources: ["ingressclasses", "ingresses"]
     verbs: ["get", "list", "watch"]
   - apiGroups: ["extensions", "networking.k8s.io"]
     resources: ["ingresses/status"]
     verbs: ["update"]
-  {{- end -}}
-  {{- if $traefikGatewayEnabled }}
   - apiGroups: [""]
     resources: ["namespaces"]
     verbs: ["list", "watch"]
@@ -45,19 +47,25 @@ rules:
       - tcproutes/status
       - tlsroutes/status
     verbs: [update]
-  {{- end -}}
-{{- if $traefikCRDEnabled }}
 ---
+# Source: traefik/templates/rbac/clusterroles.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  annotations: {{ include "release.annotations.indent" . }}
-  labels: {{ include "release.labels" . | nindent 4 }}
+  annotations: 
+    custom.chezmoi.sh/everywhere: "true"
+  labels: 
+    app.kubernetes.io/name: traefik-fully-customized
+    app.kubernetes.io/instance: fully-customized
+    app.kubernetes.io/version: "v3.1.2"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: traefik-0.1.0
+    custom.chezmoi.sh/everywhere: "true"
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
     rbac.authorization.k8s.io/aggregate-to-edit: "true"
     rbac.authorization.k8s.io/aggregate-to-view: "true"
-  name: {{ include "rbac.role.prefix" . }}:traefik-crds
-  namespace: {{ .Release.Namespace }}
+  name: traefik:default-fully-customized:traefik-crds
+  namespace: default
 rules:
   - apiGroups: [traefik.io]
     resources:
@@ -72,4 +80,3 @@ rules:
       - tlsstores
       - traefikservices
     verbs: [get, list, watch]
-{{- end }}

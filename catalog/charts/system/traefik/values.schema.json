@@ -121,7 +121,7 @@
 				"service": {
 					"additionalProperties": false,
 					"properties": {
-						"endpoints": {
+						"clusterIP": {
 							"additionalProperties": false,
 							"properties": {
 								"metadata": {
@@ -136,142 +136,17 @@
 									},
 									"description": "Additional service metadata.",
 									"title": "metadata"
-								},
-								"ports": {
-									"additionalProperties": false,
-									"patternProperties": {
-										"^[a-z0-9.-]+$": {
-											"properties": {
-												"appProtocol": {
-													"description": "The application protocol used as hint for implementation to offer behavior for protocols that they understand.",
-													"type": "string"
-												},
-												"exposeAs": {
-													"items": {
-														"type": "string",
-														"enum": [
-															"ClusterIP",
-															"NodePort",
-															"LoadBalancer",
-															"ExternalName"
-														]
-													},
-													"description": "Type of service to expose as.",
-													"type": "array"
-												},
-												"port": {
-													"minimum": 0,
-													"description": "The port number the service should expose.",
-													"type": "integer"
-												},
-												"protocol": {
-													"default": "TCP",
-													"description": "The protocol the service should expose.",
-													"enum": ["TCP", "UDP"]
-												}
-											},
-											"type": "object",
-											"required": [
-												"appProtocol",
-												"port",
-												"protocol",
-												"exposeAs"
-											]
-										}
-									},
-									"description": "Ports that the service should expose.",
-									"title": "ports"
-								}
-							},
-							"description": "Specifies the service to create (aka. v1/Service object).",
-							"title": "endpoints"
-						},
-						"externalName": {
-							"additionalProperties": false,
-							"properties": {
-								"clusterIP": {
-									"additionalProperties": false,
-									"properties": {
-										"metadata": {
-											"additionalProperties": false,
-											"properties": {
-												"annotations": {
-													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
-												},
-												"labels": {
-													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
-												}
-											},
-											"description": "Additional service metadata.",
-											"title": "metadata"
-										},
-										"spec": {
-											"additionalProperties": false,
-											"properties": {
-												"clusterIP": {
-													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/clusterIP",
-													"title": "clusterIP"
-												},
-												"clusterIPs": {
-													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/clusterIPs",
-													"title": "clusterIPs"
-												},
-												"externalTrafficPolicy": {
-													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/externalTrafficPolicy",
-													"title": "externalTrafficPolicy",
-													"enum": ["Cluster", "Local"]
-												},
-												"publishNotReadyAddresses": {
-													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/publishNotReadyAddresses",
-													"title": "publishNotReadyAddresses"
-												}
-											},
-											"description": "ClusterIP service specification.",
-											"title": "spec"
-										}
-									},
-									"description": "Configures the ClusterIP service if any ports are exposed as ClusterIP.",
-									"title": "clusterIP"
-								},
-								"metadata": {
-									"additionalProperties": false,
-									"properties": {
-										"annotations": {
-											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
-										},
-										"labels": {
-											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
-										}
-									},
-									"description": "Additional service metadata.",
-									"title": "metadata"
-								},
-								"nodePort": {
-									"additionalProperties": false,
-									"properties": {
-										"metadata": {
-											"additionalProperties": false,
-											"properties": {
-												"annotations": {
-													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
-												},
-												"labels": {
-													"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
-												}
-											},
-											"description": "Additional service metadata.",
-											"title": "metadata"
-										}
-									},
-									"description": "Configures the NodePort service if any ports are exposed as NodePort.",
-									"title": "nodePort"
 								},
 								"spec": {
 									"additionalProperties": false,
 									"properties": {
-										"externalName": {
-											"title": "externalName",
-											"type": "string"
+										"clusterIP": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/clusterIP",
+											"title": "clusterIP"
+										},
+										"clusterIPs": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/clusterIPs",
+											"title": "clusterIPs"
 										},
 										"externalTrafficPolicy": {
 											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/externalTrafficPolicy",
@@ -281,14 +156,23 @@
 										"publishNotReadyAddresses": {
 											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/publishNotReadyAddresses",
 											"title": "publishNotReadyAddresses"
+										},
+										"sessionAffinity": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/sessionAffinity",
+											"title": "sessionAffinity",
+											"enum": ["None", "ClientIP"]
+										},
+										"sessionAffinityConfig": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/sessionAffinityConfig",
+											"title": "sessionAffinityConfig"
 										}
 									},
-									"description": "ExternalName service specification.",
+									"description": "ClusterIP service specification.",
 									"title": "spec"
 								}
 							},
-							"description": "Configures the ExternalName service if any ports are exposed as ExternalName.",
-							"title": "externalName"
+							"description": "Configures the ClusterIP service if any ports are exposed as ClusterIP.",
+							"title": "clusterIP"
 						},
 						"loadBalancer": {
 							"additionalProperties": false,
@@ -333,7 +217,11 @@
 										"ipFamilyPolicy": {
 											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/ipFamilyPolicy",
 											"title": "ipFamilyPolicy",
-											"enum": ["SingleStack", "MultipleStacks"]
+											"enum": [
+												"SingleStack",
+												"PreferDualStack",
+												"RequireDualStack"
+											]
 										},
 										"loadBalancerClass": {
 											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/loadBalancerClass",
@@ -352,6 +240,10 @@
 											"title": "sessionAffinity",
 											"enum": ["None", "ClientIP"]
 										},
+										"sessionAffinityConfig": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/sessionAffinityConfig",
+											"title": "sessionAffinityConfig"
+										},
 										"trafficDistribution": {
 											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/trafficDistribution",
 											"title": "trafficDistribution"
@@ -363,6 +255,95 @@
 							},
 							"description": "Configures the LoadBalancer service if any ports are exposed as LoadBalancer.",
 							"title": "loadBalancer"
+						},
+						"metadata": {
+							"additionalProperties": false,
+							"properties": {
+								"annotations": {
+									"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+								},
+								"labels": {
+									"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
+								}
+							},
+							"description": "Additional service metadata.",
+							"title": "metadata"
+						},
+						"nodePort": {
+							"additionalProperties": false,
+							"properties": {
+								"metadata": {
+									"additionalProperties": false,
+									"properties": {
+										"annotations": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+										},
+										"labels": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
+										}
+									},
+									"description": "Additional service metadata.",
+									"title": "metadata"
+								},
+								"spec": {
+									"additionalProperties": false,
+									"properties": {
+										"publishNotReadyAddresses": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/publishNotReadyAddresses",
+											"title": "publishNotReadyAddresses"
+										},
+										"sessionAffinity": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/sessionAffinity",
+											"title": "sessionAffinity",
+											"enum": ["None", "ClientIP"]
+										},
+										"sessionAffinityConfig": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/sessionAffinityConfig",
+											"title": "sessionAffinityConfig"
+										}
+									},
+									"description": "NodePort service specification.",
+									"title": "spec"
+								}
+							},
+							"description": "Configures the NodePort service if any ports are exposed as NodePort.",
+							"title": "nodePort"
+						},
+						"ports": {
+							"additionalProperties": false,
+							"default": {},
+							"patternProperties": {
+								"^[a-z0-9.-]+$": {
+									"properties": {
+										"appProtocol": {
+											"description": "The application protocol used as hint for implementation to offer behavior for protocols that they understand.",
+											"type": "string"
+										},
+										"exposeAs": {
+											"items": {
+												"type": "string",
+												"enum": ["ClusterIP", "NodePort", "LoadBalancer"]
+											},
+											"description": "Type of service to expose as.",
+											"type": "array"
+										},
+										"port": {
+											"minimum": 0,
+											"description": "The port number the service should expose.",
+											"type": "integer"
+										},
+										"protocol": {
+											"default": "TCP",
+											"description": "The protocol the service should expose.",
+											"enum": ["TCP", "UDP"]
+										}
+									},
+									"type": "object",
+									"required": ["appProtocol", "port", "protocol", "exposeAs"]
+								}
+							},
+							"description": "Ports that the service should expose.",
+							"title": "ports"
 						}
 					},
 					"description": "Specification of how the application should be exposed.",

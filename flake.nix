@@ -71,6 +71,7 @@
               pkgs.nix-output-monitor
               pkgs.nixfmt-rfc-style
               pkgs.trunk-io
+              pkgs.yq-go
             ];
 
             env = {

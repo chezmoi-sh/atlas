@@ -1,0 +1,23 @@
+{{- if or (hasKey (.Values.spec.distruptionBudget | default dict) "maxUnavailable") (hasKey (.Values.spec.distruptionBudget | default dict) "minAvailable") -}}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  annotations: {{ include "release.annotations.indent" . }}
+  labels: {{ include "release.labels" . | nindent 4 }}
+  name: {{ include "release.name" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels: {{ include "release.labels.selector" . | nindent 6 }}
+
+  {{ with .Values.spec.distruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ . }}
+  {{- end }}
+  {{- with .Values.spec.distruptionBudget.minAvailable }}
+  minAvailable: {{ . }}
+  {{- end }}
+  {{- with .Values.spec.distruptionBudget.unhealthyPodEvictionPolicy }}
+  unhealthyPodEvictionPolicy: {{ . }}
+  {{- end }}
+{{- end -}}

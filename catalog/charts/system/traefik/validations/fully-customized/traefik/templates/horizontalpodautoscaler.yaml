@@ -1,0 +1,38 @@
+---
+# Source: traefik/templates/horizontalpodautoscaler.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  annotations: 
+    custom.chezmoi.sh/everywhere: "true"
+  labels: 
+    app.kubernetes.io/name: traefik-fully-customized
+    app.kubernetes.io/instance: fully-customized
+    app.kubernetes.io/version: "v3.1.2"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: traefik-0.1.0
+    custom.chezmoi.sh/everywhere: "true"
+  name: traefik-fully-customized
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: traefik-fully-customized
+
+  maxReplicas: 10
+  minReplicas: 5
+  behavior: 
+    scaleDown:
+      policies:
+      - periodSeconds: 60
+        type: Percent
+        value: 50
+      stabilizationWindowSeconds: 30
+  metrics: 
+    - resource:
+        name: cpu
+        target:
+          averageUtilization: 80
+          type: Utilization
+      type: Resource

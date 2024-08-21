@@ -21,3 +21,31 @@
 [group('build')]
 generate_schema:
     helm-schema --append-newline
+
+[doc('Generate the CRDs for the current version of Traefik')]
+[group('build')]
+generate_crds: clean_crds
+    #!/usr/bin/env bash
+    version=$(yq eval '.appVersion' Chart.yaml)
+
+    curl --silent --location "https://raw.githubusercontent.com/traefik/traefik/${version}/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml" |
+        csplit --quiet --elide-empty-files --prefix=crds/ --suffix-format='%02d.yaml' - '/^---/' '{*}'
+
+    for file in crds/*.yaml; do
+        name=$(yq eval '.metadata.name | sub("\.", "") | "\(.)_'"${version}"'.yaml"' "${file}")
+        mv "${file}" "crds/${name}"
+    done
+
+[doc('Remove the generated CRDs')]
+[group('clean')]
+clean_crds:
+    rm --force crds/*
+
+compile_examples example:
+    @: {{ if example =~ 'examples/.+\.yaml$' {""} else { error("only YAML files in 'examples' are allowed") } }}
+    @: {{ if path_exists(example) == "false" { error("file not found... aborted") } else {""} }}
+    helm template {{ replace_regex(example, 'examples/(?<name>.+).yaml', '$name') }} . \
+        --debug \
+        --namespace default \
+        --values {{ example }} \
+        --output-dir validations/{{ replace_regex(example, 'examples/(?<name>.+).yaml', '$name') }}

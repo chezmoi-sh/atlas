@@ -2,9 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  {{- with .Values.metadata.annotations }}
-  annotations: {{- toYaml . | nindent 4 }}
-  {{- end }}
+  annotations: {{ include "release.annotations.indent" . }}
   labels: {{ include "release.labels" . | nindent 4 }}
   name: {{ include "rbac.role.prefix" . }}:traefik
   namespace: {{ .Release.Namespace }}
@@ -21,9 +19,7 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  {{- with .Values.metadata.annotations }}
-  annotations: {{- toYaml . | nindent 4 }}
-  {{- end }}
+  annotations: {{ include "release.annotations.indent" . }}
   labels: {{ include "release.labels" . | nindent 4 }}
   name: {{ include "rbac.role.prefix" . }}:traefik-crds
   namespace: {{ .Release.Namespace }}

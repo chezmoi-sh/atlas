@@ -1,0 +1,25 @@
+---
+# Source: traefik/templates/poddisruptionbudget.yaml
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  annotations: 
+    custom.chezmoi.sh/everywhere: "true"
+  labels: 
+    app.kubernetes.io/name: traefik-fully-customized
+    app.kubernetes.io/instance: fully-customized
+    app.kubernetes.io/version: "v3.1.2"
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: traefik-0.1.0
+    custom.chezmoi.sh/everywhere: "true"
+  name: traefik-fully-customized
+  namespace: default
+spec:
+  selector:
+    matchLabels: 
+      app.kubernetes.io/instance: fully-customized
+      app.kubernetes.io/version: "v3.1.2"
+
+  
+  minAvailable: 2
+  unhealthyPodEvictionPolicy: AlwaysAllow

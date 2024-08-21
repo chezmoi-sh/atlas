@@ -1,0 +1,181 @@
+---
+# yaml-language-server: $schema=../values.schema.json
+apiVersion: apps.chezmoi.sh/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    custom.chezmoi.sh/everywhere: "true"
+  labels:
+    custom.chezmoi.sh/everywhere: "true"
+spec:
+  # NOTE: scale Traefik deployment up to 10 replicas when CPU utilization is above 80% (min 5 replicas).
+  autoscaling:
+    maxReplicas: 10
+    minReplicas: 5
+    behavior:
+      scaleDown:
+        stabilizationWindowSeconds: 30
+        policies:
+          - type: Percent
+            value: 50
+            periodSeconds: 60
+    metrics:
+      - type: Resource
+        resource:
+          name: cpu
+          target:
+            type: Utilization
+            averageUtilization: 80
+
+  # NOTE: always keep at least 2 replicas available when Traefik is running.
+  distruptionBudget:
+    minAvailable: 2
+    unhealthyPodEvictionPolicy: AlwaysAllow
+
+  # NOTE: only schedule Traefik on nodes with the label `kind.chezmoi.sh` and that are running on Linux.
+  #       Also, ignore any unschedulable nodes and prefer to schedule Traefik on nodes where it's not already running.
+  scheduling:
+    nodeSelector:
+      beta.kubernetes.io/os: linux
+    tolerations:
+      - operator: Exists
+        effect: NoSchedule
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: kind.chezmoi.sh
+                  operator: Exists
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              matchLabelKeys: [app.kubernetes.io/instance, app.kubernetes.io/version]
+              topologyKey: kubernetes.io/hostname
+
+  # NOTE: configure Traefik service to expose like this:
+  #       - HTTP service on port 80 as a LoadBalancer
+  #       - Metrics service on port 9000 as a ClusterIP
+  #       - DNS service on port 53/UDP as a NodePort
+  # NOTE²: keep Traefik api not exposed.
+  service:
+    metadata:
+      annotations:
+        custom.chezmoi.sh/service-annotation: "true"
+      labels:
+        custom.chezmoi.sh/service-label: "true"
+
+    ports:
+      http:
+        appProtocol: http
+        exposeAs:
+          - LoadBalancer
+        port: 80
+        protocol: TCP
+      metrics:
+        appProtocol: http
+        exposeAs:
+          - ClusterIP
+        port: 9000
+        protocol: TCP
+      dns:
+        appProtocol: dns
+        exposeAs:
+          - NodePort
+        port: 53
+        protocol: UDP
+
+    clusterIP:
+      metadata:
+        annotations:
+          custom.chezmoi.sh/serice-clusterIP-annotation: "true"
+        labels:
+          custom.chezmoi.sh/service-clusterIP-label: "true"
+      spec:
+        externalTrafficPolicy: Cluster
+        publishNotReadyAddresses: true
+        sessionAffinity: ClientIP
+        sessionAffinityConfig:
+          clientIP:
+            timeoutSeconds: 21600 # 6 hours
+
+    loadBalancer:
+      metadata:
+        annotations:
+          custom.chezmoi.sh/service-loadBalancer-annotation: "true"
+        labels:
+          custom.chezmoi.sh/service-loadBalancer-label: "true"
+      spec:
+        allocateLoadBalancerNodePorts: true
+        ipFamilies:
+          - IPv4
+          - IPv6
+        ipFamilyPolicy: PreferDualStack
+        externalTrafficPolicy: Local
+        healthCheckNodePort: 30000
+        publishNotReadyAddresses: true
+        sessionAffinity: None
+        trafficDistribution: PreferClose
+
+    nodePort:
+      metadata:
+        annotations:
+          custom.chezmoi.sh/service-nodePort-annotation: "true"
+        labels:
+          custom.chezmoi.sh/service-nodePort-label: "true"
+      spec:
+        publishNotReadyAddresses: true
+        sessionAffinity: ClientIP
+
+  # NOTE: configure Traefik to use the official Traefik image.
+  template:
+    traefik:
+      metadata:
+        annotations:
+          custom.chezmoi.sh/pod-annotation: "true"
+        labels:
+          custom.chezmoi.sh/pod-label: "true"
+      spec:
+        containers:
+          traefik:
+            image:
+              # NOTE: this chart is compatible with the official Traefik image.
+              # renovate: datasource=docker depName=docker.io/traefik
+              repository: docker.io/traefik
+              tag: v3.1.2@sha256:ec1a82940b8e00eaeef33fb4113aa1d1573b2ebb6440e10c023743fe96f08475
+              pullPolicy: IfNotPresent
+            resources:
+              limits:
+                cpu: 500m
+                memory: 512Mi
+              requests:
+                cpu: 100m
+                memory: 128Mi
+
+  # NOTE: configure Traefik to use all Kubernetes providers and expose metrics in Prometheus format.
+  traefik:
+    api:
+      dashboard: false
+      insecure: false
+    entryPoints:
+      http:
+        address: :8080
+      dns:
+        address: :8053/udp
+      api:
+        address: :9000
+      metrics:
+        address: :9100
+    global:
+      checkNewVersion: false
+      sendAnonymousUsage: false
+    log:
+      level: DEBUG
+    metrics:
+      prometheus:
+        entryPoint: metrics
+    providers:
+      kubernetesCRD: {}
+      kubernetesGateway: {}
+      kubernetesIngress: {}
