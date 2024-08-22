@@ -12,6 +12,12 @@
 			"title": "global",
 			"type": "object"
 		},
+		"helm_dump": {
+			"default": false,
+			"description": "Whether to dump the Helm chart context for debugging purposes. DO NOT USE IT",
+			"title": "helm_dump",
+			"type": "boolean"
+		},
 		"kind": {
 			"default": "Application",
 			"const": "Application",
@@ -392,17 +398,9 @@
 																	"title": "repository"
 																},
 																"tag": {
-																	"default": "null",
+																	"default": "v3.1.2@sha256:...",
 																	"description": "Container image tag with optional sha256 digest.",
-																	"title": "tag",
-																	"oneOf": [
-																		{
-																			"type": "string"
-																		},
-																		{
-																			"type": "null"
-																		}
-																	]
+																	"title": "tag"
 																}
 															},
 															"description": "Container image reference to use.",

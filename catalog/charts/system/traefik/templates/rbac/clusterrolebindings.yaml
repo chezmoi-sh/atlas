@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  annotations: {{ include "release.annotations.indent" . }}
+  annotations: {{ include "release.annotations" . | default "{}" | nindent 4 }}
   labels: {{ include "release.labels" . | nindent 4 }}
   name: {{ include "rbac.role.prefix" . }}:traefik
   namespace: {{ .Release.Namespace }}
@@ -19,7 +19,7 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  annotations: {{ include "release.annotations.indent" . }}
+  annotations: {{ include "release.annotations" . | default "{}" | nindent 4 }}
   labels: {{ include "release.labels" . | nindent 4 }}
   name: {{ include "rbac.role.prefix" . }}:traefik-crds
   namespace: {{ .Release.Namespace }}

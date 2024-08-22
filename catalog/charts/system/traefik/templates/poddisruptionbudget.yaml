@@ -3,7 +3,7 @@
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  annotations: {{ include "release.annotations.indent" . }}
+  annotations: {{ include "release.annotations" . | default "{}" | nindent 4 }}
   labels: {{ include "release.labels" . | nindent 4 }}
   name: {{ include "release.name" . }}
   namespace: {{ .Release.Namespace }}

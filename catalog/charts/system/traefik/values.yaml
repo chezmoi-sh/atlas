@@ -87,19 +87,18 @@ spec:
             # Container image reference to use.
             image:
               # @schema@
+              # oneOf:
               # required: false
               # @schema@
               # Container image repository.
               repository: ghcr.io/chezmoi-sh/traefik
 
               # @schema@
+              # description: Container image tag with optional sha256 digest.
               # required: false
-              # oneOf:
-              # - type: string
-              # - type: "null"
               # @schema@
-              # Container image tag with optional sha256 digest.
-              tag: null
+              # renovate: datasource=docker depName=ghcr.io/chezmoi-sh/traefik versioning=semver
+              tag: v3.1.2@sha256:...
 
               # @schema@
               # required: false
@@ -474,3 +473,15 @@ spec:
       sendAnonymousUsage: false
     log:
       level: INFO
+
+# -----------------------------------------------------------------------------
+# Because `helm template` didn't have yet the `--skip-schema-validation` flag,
+# we need to add the `helm_dump` field to the values.yaml file to avoid the
+# validation error.
+
+# @schema
+# type: boolean
+# description: Whether to dump the Helm chart context for debugging purposes. DO NOT USE IT
+# required: false
+# @schema
+helm_dump: false

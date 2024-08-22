@@ -1,0 +1,30 @@
+{{- if (default .Values.helm_dump false) -}}
+---
+#  ██╗  ██╗███████╗██╗     ███╗   ███╗    ██████╗ ██╗   ██╗███╗   ███╗██████╗
+#  ██║  ██║██╔════╝██║     ████╗ ████║    ██╔══██╗██║   ██║████╗ ████║██╔══██╗
+#  ███████║█████╗  ██║     ██╔████╔██║    ██║  ██║██║   ██║██╔████╔██║██████╔╝
+#  ██╔══██║██╔══╝  ██║     ██║╚██╔╝██║    ██║  ██║██║   ██║██║╚██╔╝██║██╔═══╝
+#  ██║  ██║███████╗███████╗██║ ╚═╝ ██║    ██████╔╝╚██████╔╝██║ ╚═╝ ██║██║
+#  ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚═╝    ╚═════╝  ╚═════╝ ╚═╝     ╚═╝╚═╝
+#
+# -----------------------------------------------------------------------------
+# This file is auto-generated from the Helm chart and is intended for debugging
+# purposes. It contains the full dump of the Helm chart context and some other
+# things like templates expansion.
+#
+# Chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+# Dumped at: {{ now | date "2006-01-02 15:04:05" }}
+# -----------------------------------------------------------------------------
+{{/*
+templates:
+*/}}
+$: {{ unset . "Files" | toYaml | nindent 2 }}
+
+templates:
+  rbac.role.prefix: {{ include "rbac.role.prefix" . }}
+  release.annotations: {{ include "release.annotations" . | default "{}" | nindent 4 }}
+  release.labels: {{ include "release.labels" . | nindent 4 }}
+  release.labels.selector: {{ include "release.labels.selector" . | nindent 4 }}
+  release.name: {{ include "release.name" . }}
+  traefik.args: {{ include "traefik.args" .Values.spec.traefik | nindent 4 }}
+{{- end -}}

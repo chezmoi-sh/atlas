@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations: {{ include "release.annotations.indent" . }}
+  annotations: {{ include "release.annotations" . | default "{}" | nindent 4 }}
   labels: {{ include "release.labels" . | nindent 4 }}
   name: {{ include "release.name" . }}
   namespace: {{ .Release.Namespace }}
@@ -20,10 +20,20 @@ spec:
     spec:
       containers:
       - name: traefik
-        image: {{ .Values.spec.template.traefik.spec.containers.traefik.image.repository }}:{{ default .Values.spec.template.traefik.spec.containers.traefik.image.tag .Chart.AppVersion }}
+        image: {{ .Values.spec.template.traefik.spec.containers.traefik.image.repository }}:{{ .Values.spec.template.traefik.spec.containers.traefik.image.tag }}
         imagePullPolicy: {{ .Values.spec.template.traefik.spec.containers.traefik.image.pullPolicy }}
         # generates ports from traefik configuration
         # generates flags from traefik configuration (converts to --flag value)
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: traefik
+            scheme: HTTP
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: traefik
+            scheme: HTTP
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

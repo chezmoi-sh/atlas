@@ -5,7 +5,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  annotations: {{ include "release.annotations.indent" . }}
+  annotations: {{ include "release.annotations" . | default "{}" | nindent 4 }}
   labels: {{ include "release.labels" . | nindent 4 }}
   name: {{ include "rbac.role.prefix" . }}:traefik
   namespace: {{ .Release.Namespace }}
@@ -51,7 +51,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  annotations: {{ include "release.annotations.indent" . }}
+  annotations: {{ include "release.annotations" . | default "{}" | nindent 4 }}
   labels: {{ include "release.labels" . | nindent 4 }}
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
     rbac.authorization.k8s.io/aggregate-to-edit: "true"

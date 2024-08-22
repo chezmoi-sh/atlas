@@ -6,7 +6,7 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  annotations: {{ include "release.annotations.indent" . }}
+  annotations: {{ include "release.annotations" . | default "{}" | nindent 4 }}
   labels: {{ include "release.labels" . | nindent 4 }}
   name: {{ include "release.name" . }}
   namespace: {{ .Release.Namespace }}

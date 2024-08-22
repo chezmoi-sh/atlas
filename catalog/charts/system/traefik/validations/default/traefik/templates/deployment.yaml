@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: traefik
-        image: ghcr.io/chezmoi-sh/traefik:v3.1.2
+        image: :v3.1.2
         imagePullPolicy: IfNotPresent
         # generates ports from traefik configuration
         # generates flags from traefik configuration (converts to --flag value)
