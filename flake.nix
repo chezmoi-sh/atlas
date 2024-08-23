@@ -46,12 +46,27 @@
             vendorHash = "sha256-qKizheh9YGJFe/bNeWVG+gbmsouuNlMAaZO0DvaL1R0=";
             subPackages = [ "cmd/helm-schema" ];
           };
+
+          # kubeconform is a fast Kubernetes manifests validator, with support for Custom Resources
+          kubeconform = pkgs.buildGoModule {
+            pname = "kubeconform";
+            version = "v0.6.7";
+            src = pkgs.fetchFromGitHub {
+              owner = "yannh";
+              repo = "kubeconform";
+              rev = "v0.6.7";
+              hash = "sha256-Yq9lJ3rSG8v/PeofkZrnO2nzEgtyB5vtNafKabp8hnQ=";
+            };
+            vendorHash = null;
+            subPackages = [ "cmd/kubeconform" ];
+          };
         };
 
         devShells.default =
           with packages;
           pkgs.mkShell {
             packages = [
+              kubeconform
               helm-schema
               pkgs.bashInteractive
               pkgs.bats

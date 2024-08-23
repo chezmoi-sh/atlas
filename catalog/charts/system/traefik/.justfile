@@ -57,6 +57,17 @@ compile_examples example: (clean_validations example)
         --values {{ example }} \
         --output-dir validations/{{ replace_regex(example, 'examples/(?<name>.+).yaml', '$name') }}
 
+[doc('Validate the examples in the `examples` directory using kubeconform')]
+[group('validate')]
+validate_examples example:
+    @: {{ if example =~ 'examples/.+\.yaml$' {""} else { error("only YAML files in 'examples' are allowed") } }}
+    @: {{ if path_exists(example) == "false" { error("file not found... aborted") } else {""} }}
+    helm template {{ replace_regex(example, 'examples/(?<name>.+).yaml', '$name') }} . \
+        --debug \
+        --namespace validations \
+        --values {{ example }} \
+    | kubeconform --strict --summary
+
 [doc('Dump some information about the Helm context')]
 [group('debug')]
 @dump_helm values="examples/default.yaml":
