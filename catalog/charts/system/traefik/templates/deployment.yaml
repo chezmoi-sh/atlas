@@ -14,16 +14,22 @@ spec:
   selector:
     matchLabels: {{ include "release.labels.selector" . | nindent 6 }}
   template:
-    # missing pod annotations/labels
+    {{- $template := .Values.spec.template.traefik }}
     metadata:
-      labels: {{ include "release.labels.selector" . | nindent 8 }}
+      {{- if $template.metadata.annotations }}
+      annotations: {{ toYaml $template.metadata.annotations | nindent 8 }}
+      {{ end -}}
+      {{- $labels := mergeOverwrite (include "release.labels" . | fromYaml) ($template.metadata.labels) }}
+      labels: {{ $labels | toYaml | nindent 8 }}
     spec:
+      affinity: {{- .Values.spec.scheduling.affinity | toYaml | nindent 8 }}
+      automountServiceAccountToken: true
       containers:
       - name: traefik
-        image: {{ .Values.spec.template.traefik.spec.containers.traefik.image.repository }}:{{ .Values.spec.template.traefik.spec.containers.traefik.image.tag }}
-        imagePullPolicy: {{ .Values.spec.template.traefik.spec.containers.traefik.image.pullPolicy }}
-        # generates ports from traefik configuration
-        # generates flags from traefik configuration (converts to --flag value)
+        args: {{- include "traefik.args" .Values.spec.traefik | nindent 10 }}
+        image: {{ $template.spec.containers.traefik.image.repository }}:{{ $template.spec.containers.traefik.image.tag }}
+        imagePullPolicy: {{ $template.spec.containers.traefik.image.pullPolicy }}
+        ports: {{- include "traefik.container.ports" .Values.spec.traefik | nindent 10 }}
         livenessProbe:
           httpGet:
             path: /ping
@@ -34,14 +40,26 @@ spec:
             path: /ping
             port: traefik
             scheme: HTTP
+        resources: {{- $template.spec.containers.traefik.resources | toYaml | nindent 10 }}
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
             drop: [ALL]
           privileged: false
           readOnlyRootFilesystem: true
+          seccompProfile:
+            type: RuntimeDefault
+      enableServiceLinks: false
+      imagePullSecrets: {{- .Values.spec.template.traefik.spec.imagePullSecrets | toYaml | nindent 8 }}
+      nodeSelector: {{- .Values.spec.scheduling.nodeSelector | toYaml | nindent 8 }}
+      priorityClassName: {{ .Values.spec.scheduling.priorityClassName }}
+      restartPolicy: Always
       securityContext:
         fsGroup: 22760
         runAsGroup: 22760
         runAsNonRoot: true
         runAsUser: 44782
+      serviceAccountName: {{ include "release.name" . }}
+      shareProcessNamespace: true # required to allow debug container to access traefik process
+      tolerations: {{- .Values.spec.scheduling.tolerations | toYaml | nindent 8 }}
+      topologySpreadConstraints: {{- .Values.spec.scheduling.topologySpreadConstraints | toYaml | nindent 8 }}

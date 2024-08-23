@@ -1,0 +1,388 @@
+---
+# Source: traefik/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: 
+    custom.chezmoi.sh/everywhere: "true"
+  labels: 
+    app.kubernetes.io/name: traefik-fully-customized
+    app.kubernetes.io/instance: fully-customized
+    app.kubernetes.io/version: "v3.1.2"
+    helm.sh/chart: traefik-0.1.0
+    app.kubernetes.io/managed-by: Helm
+    custom.chezmoi.sh/everywhere: "true"
+  name: traefik-fully-customized
+  namespace: validations
+spec:
+  replicas: 5
+  selector:
+    matchLabels: 
+      app.kubernetes.io/instance: fully-customized
+      app.kubernetes.io/version: "v3.1.2"
+      helm.sh/chart: traefik-0.1.0
+  template:
+    metadata:
+      annotations: 
+        custom.chezmoi.sh/pod-annotation: "true"
+      
+      labels: 
+        app.kubernetes.io/instance: fully-customized
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: traefik-fully-customized
+        app.kubernetes.io/version: v3.1.2
+        custom.chezmoi.sh/everywhere: "true"
+        custom.chezmoi.sh/pod-label: "true"
+        helm.sh/chart: traefik-0.1.0
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kind.chezmoi.sh
+                operator: Exists
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              matchLabelKeys:
+              - app.kubernetes.io/instance
+              - app.kubernetes.io/version
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      automountServiceAccountToken: true
+      containers:
+      - name: traefik
+        args:
+          - --accessLog.addInternals=true
+          - --accessLog.bufferingSize=42
+          - --accessLog.fields.defaultMode="foobar"
+          - --accessLog.fields.headers.defaultMode="foobar"
+          - --accessLog.fields.headers.names.name0="foobar"
+          - --accessLog.fields.headers.names.name1="foobar"
+          - --accessLog.fields.names.name0="foobar"
+          - --accessLog.fields.names.name1="foobar"
+          - --accessLog.filePath="foobar"
+          - --accessLog.filters.minDuration="42s"
+          - --accessLog.filters.retryAttempts=true
+          - --accessLog.filters.statusCodes[0]="foobar"
+          - --accessLog.filters.statusCodes[1]="foobar"
+          - --accessLog.format="foobar"
+          - --api.dashboard=true
+          - --api.debug=true
+          - --api.disableDashboardAd=true
+          - --api.insecure=true
+          - --certificatesResolvers.CertificateResolver0.acme.caServer="foobar"
+          - --certificatesResolvers.CertificateResolver0.acme.certificatesDuration=42
+          - --certificatesResolvers.CertificateResolver0.acme.dnsChallenge.delayBeforeCheck="42s"
+          - --certificatesResolvers.CertificateResolver0.acme.dnsChallenge.disablePropagationCheck=true
+          - --certificatesResolvers.CertificateResolver0.acme.dnsChallenge.provider="foobar"
+          - --certificatesResolvers.CertificateResolver0.acme.dnsChallenge.resolvers[0]="foobar"
+          - --certificatesResolvers.CertificateResolver0.acme.dnsChallenge.resolvers[1]="foobar"
+          - --certificatesResolvers.CertificateResolver0.acme.eab.hmacEncoded="foobar"
+          - --certificatesResolvers.CertificateResolver0.acme.eab.kid="foobar"
+          - --certificatesResolvers.CertificateResolver0.acme.email="foobar"
+          - --certificatesResolvers.CertificateResolver0.acme.httpChallenge.entryPoint="foobar"
+          - --certificatesResolvers.CertificateResolver0.acme.keyType="foobar"
+          - --certificatesResolvers.CertificateResolver0.acme.preferredChain="foobar"
+          - --certificatesResolvers.CertificateResolver0.acme.storage="foobar"
+          - --certificatesResolvers.CertificateResolver0.acme.tlsChallenge
+          - --certificatesResolvers.CertificateResolver0.tailscale
+          - --certificatesResolvers.CertificateResolver1.acme.caServer="foobar"
+          - --certificatesResolvers.CertificateResolver1.acme.certificatesDuration=42
+          - --certificatesResolvers.CertificateResolver1.acme.dnsChallenge.delayBeforeCheck="42s"
+          - --certificatesResolvers.CertificateResolver1.acme.dnsChallenge.disablePropagationCheck=true
+          - --certificatesResolvers.CertificateResolver1.acme.dnsChallenge.provider="foobar"
+          - --certificatesResolvers.CertificateResolver1.acme.dnsChallenge.resolvers[0]="foobar"
+          - --certificatesResolvers.CertificateResolver1.acme.dnsChallenge.resolvers[1]="foobar"
+          - --certificatesResolvers.CertificateResolver1.acme.eab.hmacEncoded="foobar"
+          - --certificatesResolvers.CertificateResolver1.acme.eab.kid="foobar"
+          - --certificatesResolvers.CertificateResolver1.acme.email="foobar"
+          - --certificatesResolvers.CertificateResolver1.acme.httpChallenge.entryPoint="foobar"
+          - --certificatesResolvers.CertificateResolver1.acme.keyType="foobar"
+          - --certificatesResolvers.CertificateResolver1.acme.preferredChain="foobar"
+          - --certificatesResolvers.CertificateResolver1.acme.storage="foobar"
+          - --certificatesResolvers.CertificateResolver1.acme.tlsChallenge
+          - --certificatesResolvers.CertificateResolver1.tailscale
+          - --core.defaultRuleSyntax="foobar"
+          - --entryPoints.EntryPoint0.address=":10/udp"
+          - --entryPoints.EntryPoint0.asDefault=true
+          - --entryPoints.EntryPoint0.forwardedHeaders.insecure=true
+          - --entryPoints.EntryPoint0.forwardedHeaders.trustedIPs[0]="foobar"
+          - --entryPoints.EntryPoint0.forwardedHeaders.trustedIPs[1]="foobar"
+          - --entryPoints.EntryPoint0.http.encodeQuerySemicolons=true
+          - --entryPoints.EntryPoint0.http.middlewares[0]="foobar"
+          - --entryPoints.EntryPoint0.http.middlewares[1]="foobar"
+          - --entryPoints.EntryPoint0.http.redirections.entryPoint.permanent=true
+          - --entryPoints.EntryPoint0.http.redirections.entryPoint.priority=42
+          - --entryPoints.EntryPoint0.http.redirections.entryPoint.scheme="foobar"
+          - --entryPoints.EntryPoint0.http.redirections.entryPoint.to="foobar"
+          - --entryPoints.EntryPoint0.http.tls.certResolver="foobar"
+          - --entryPoints.EntryPoint0.http.tls.domains[0].main="foobar"
+          - --entryPoints.EntryPoint0.http.tls.domains[0].sans[0]="foobar"
+          - --entryPoints.EntryPoint0.http.tls.domains[0].sans[1]="foobar"
+          - --entryPoints.EntryPoint0.http.tls.domains[1].main="foobar"
+          - --entryPoints.EntryPoint0.http.tls.domains[1].sans[0]="foobar"
+          - --entryPoints.EntryPoint0.http.tls.domains[1].sans[1]="foobar"
+          - --entryPoints.EntryPoint0.http.tls.options="foobar"
+          - --entryPoints.EntryPoint0.http2.maxConcurrentStreams=42
+          - --entryPoints.EntryPoint0.http3.advertisedPort=42
+          - --entryPoints.EntryPoint0.proxyProtocol.insecure=true
+          - --entryPoints.EntryPoint0.proxyProtocol.trustedIPs[0]="foobar"
+          - --entryPoints.EntryPoint0.proxyProtocol.trustedIPs[1]="foobar"
+          - --entryPoints.EntryPoint0.reusePort=true
+          - --entryPoints.EntryPoint0.transport.keepAliveMaxRequests=42
+          - --entryPoints.EntryPoint0.transport.keepAliveMaxTime="42s"
+          - --entryPoints.EntryPoint0.transport.lifeCycle.graceTimeOut="42s"
+          - --entryPoints.EntryPoint0.transport.lifeCycle.requestAcceptGraceTimeout="42s"
+          - --entryPoints.EntryPoint0.transport.respondingTimeouts.idleTimeout="42s"
+          - --entryPoints.EntryPoint0.transport.respondingTimeouts.readTimeout="42s"
+          - --entryPoints.EntryPoint0.transport.respondingTimeouts.writeTimeout="42s"
+          - --entryPoints.EntryPoint0.udp.timeout="42s"
+          - --entryPoints.metrics.address=":9100"
+          - --entryPoints.traefik.address=":9000"
+          - --entryPoints.web.address=":8080"
+          - --entryPoints.websecure.address=":8443"
+          - --entryPoints.websecure.http.tls
+          - --experimental.kubernetesGateway=true
+          - --experimental.localPlugins.LocalDescriptor0.moduleName="foobar"
+          - --experimental.localPlugins.LocalDescriptor0.settings.envs[0]="foobar"
+          - --experimental.localPlugins.LocalDescriptor0.settings.envs[1]="foobar"
+          - --experimental.localPlugins.LocalDescriptor0.settings.mounts[0]="foobar"
+          - --experimental.localPlugins.LocalDescriptor0.settings.mounts[1]="foobar"
+          - --experimental.localPlugins.LocalDescriptor1.moduleName="foobar"
+          - --experimental.localPlugins.LocalDescriptor1.settings.envs[0]="foobar"
+          - --experimental.localPlugins.LocalDescriptor1.settings.envs[1]="foobar"
+          - --experimental.localPlugins.LocalDescriptor1.settings.mounts[0]="foobar"
+          - --experimental.localPlugins.LocalDescriptor1.settings.mounts[1]="foobar"
+          - --experimental.plugins.Descriptor0.moduleName="foobar"
+          - --experimental.plugins.Descriptor0.settings.envs[0]="foobar"
+          - --experimental.plugins.Descriptor0.settings.envs[1]="foobar"
+          - --experimental.plugins.Descriptor0.settings.mounts[0]="foobar"
+          - --experimental.plugins.Descriptor0.settings.mounts[1]="foobar"
+          - --experimental.plugins.Descriptor0.version="foobar"
+          - --experimental.plugins.Descriptor1.moduleName="foobar"
+          - --experimental.plugins.Descriptor1.settings.envs[0]="foobar"
+          - --experimental.plugins.Descriptor1.settings.envs[1]="foobar"
+          - --experimental.plugins.Descriptor1.settings.mounts[0]="foobar"
+          - --experimental.plugins.Descriptor1.settings.mounts[1]="foobar"
+          - --experimental.plugins.Descriptor1.version="foobar"
+          - --global.checkNewVersion=true
+          - --global.sendAnonymousUsage=true
+          - --hostResolver.cnameFlattening=true
+          - --hostResolver.resolvConfig="foobar"
+          - --hostResolver.resolvDepth=42
+          - --log.compress=true
+          - --log.filePath="foobar"
+          - --log.format="foobar"
+          - --log.level="foobar"
+          - --log.maxAge=42
+          - --log.maxBackups=42
+          - --log.maxSize=42
+          - --log.noColor=true
+          - --metrics.addInternals=true
+          - --metrics.datadog.addEntryPointsLabels=true
+          - --metrics.datadog.addRoutersLabels=true
+          - --metrics.datadog.addServicesLabels=true
+          - --metrics.datadog.address="foobar"
+          - --metrics.datadog.prefix="foobar"
+          - --metrics.datadog.pushInterval="42s"
+          - --metrics.influxDB2.addEntryPointsLabels=true
+          - --metrics.influxDB2.addRoutersLabels=true
+          - --metrics.influxDB2.addServicesLabels=true
+          - --metrics.influxDB2.additionalLabels.name0="foobar"
+          - --metrics.influxDB2.additionalLabels.name1="foobar"
+          - --metrics.influxDB2.address="foobar"
+          - --metrics.influxDB2.bucket="foobar"
+          - --metrics.influxDB2.org="foobar"
+          - --metrics.influxDB2.pushInterval="42s"
+          - --metrics.influxDB2.token="foobar"
+          - --metrics.otlp.addEntryPointsLabels=true
+          - --metrics.otlp.addRoutersLabels=true
+          - --metrics.otlp.addServicesLabels=true
+          - --metrics.otlp.explicitBoundaries[0]=42
+          - --metrics.otlp.explicitBoundaries[1]=42
+          - --metrics.otlp.grpc.endpoint="foobar"
+          - --metrics.otlp.grpc.headers.name0="foobar"
+          - --metrics.otlp.grpc.headers.name1="foobar"
+          - --metrics.otlp.grpc.insecure=true
+          - --metrics.otlp.grpc.tls.ca="foobar"
+          - --metrics.otlp.grpc.tls.cert="foobar"
+          - --metrics.otlp.grpc.tls.insecureSkipVerify=true
+          - --metrics.otlp.grpc.tls.key="foobar"
+          - --metrics.otlp.http.endpoint="foobar"
+          - --metrics.otlp.http.headers.name0="foobar"
+          - --metrics.otlp.http.headers.name1="foobar"
+          - --metrics.otlp.http.tls.ca="foobar"
+          - --metrics.otlp.http.tls.cert="foobar"
+          - --metrics.otlp.http.tls.insecureSkipVerify=true
+          - --metrics.otlp.http.tls.key="foobar"
+          - --metrics.otlp.pushInterval="42s"
+          - --metrics.prometheus.addEntryPointsLabels=true
+          - --metrics.prometheus.addRoutersLabels=true
+          - --metrics.prometheus.addServicesLabels=true
+          - --metrics.prometheus.buckets[0]=42
+          - --metrics.prometheus.buckets[1]=42
+          - --metrics.prometheus.entryPoint="foobar"
+          - --metrics.prometheus.headerLabels.name0="foobar"
+          - --metrics.prometheus.headerLabels.name1="foobar"
+          - --metrics.prometheus.manualRouting=true
+          - --metrics.statsD.addEntryPointsLabels=true
+          - --metrics.statsD.addRoutersLabels=true
+          - --metrics.statsD.addServicesLabels=true
+          - --metrics.statsD.address="foobar"
+          - --metrics.statsD.prefix="foobar"
+          - --metrics.statsD.pushInterval="42s"
+          - --ping.entryPoint="foobar"
+          - --ping.manualRouting=true
+          - --ping.terminatingStatusCode=42
+          - --providers.kubernetesCRD.allowCrossNamespace=true
+          - --providers.kubernetesCRD.allowEmptyServices=true
+          - --providers.kubernetesCRD.allowExternalNameServices=true
+          - --providers.kubernetesCRD.certAuthFilePath="foobar"
+          - --providers.kubernetesCRD.disableClusterScopeResources=true
+          - --providers.kubernetesCRD.endpoint="foobar"
+          - --providers.kubernetesCRD.ingressClass="foobar"
+          - --providers.kubernetesCRD.labelSelector="foobar"
+          - --providers.kubernetesCRD.namespaces[0]="foobar"
+          - --providers.kubernetesCRD.namespaces[1]="foobar"
+          - --providers.kubernetesCRD.nativeLBByDefault=true
+          - --providers.kubernetesCRD.throttleDuration="42s"
+          - --providers.kubernetesCRD.token="foobar"
+          - --providers.kubernetesGateway.certAuthFilePath="foobar"
+          - --providers.kubernetesGateway.endpoint="foobar"
+          - --providers.kubernetesGateway.experimentalChannel=true
+          - --providers.kubernetesGateway.labelSelector="foobar"
+          - --providers.kubernetesGateway.namespaces[0]="foobar"
+          - --providers.kubernetesGateway.namespaces[1]="foobar"
+          - --providers.kubernetesGateway.statusAddress.hostname="foobar"
+          - --providers.kubernetesGateway.statusAddress.ip="foobar"
+          - --providers.kubernetesGateway.statusAddress.service.name="foobar"
+          - --providers.kubernetesGateway.statusAddress.service.namespace="foobar"
+          - --providers.kubernetesGateway.throttleDuration="42s"
+          - --providers.kubernetesGateway.token="foobar"
+          - --providers.kubernetesIngress.allowEmptyServices=true
+          - --providers.kubernetesIngress.allowExternalNameServices=true
+          - --providers.kubernetesIngress.certAuthFilePath="foobar"
+          - --providers.kubernetesIngress.disableClusterScopeResources=true
+          - --providers.kubernetesIngress.disableIngressClassLookup=true
+          - --providers.kubernetesIngress.endpoint="foobar"
+          - --providers.kubernetesIngress.ingressClass="foobar"
+          - --providers.kubernetesIngress.ingressEndpoint.hostname="foobar"
+          - --providers.kubernetesIngress.ingressEndpoint.ip="foobar"
+          - --providers.kubernetesIngress.ingressEndpoint.publishedService="foobar"
+          - --providers.kubernetesIngress.labelSelector="foobar"
+          - --providers.kubernetesIngress.namespaces[0]="foobar"
+          - --providers.kubernetesIngress.namespaces[1]="foobar"
+          - --providers.kubernetesIngress.nativeLBByDefault=true
+          - --providers.kubernetesIngress.throttleDuration="42s"
+          - --providers.kubernetesIngress.token="foobar"
+          - --providers.providersThrottleDuration="42s"
+          - --serversTransport.forwardingTimeouts.dialTimeout="42s"
+          - --serversTransport.forwardingTimeouts.idleConnTimeout="42s"
+          - --serversTransport.forwardingTimeouts.responseHeaderTimeout="42s"
+          - --serversTransport.insecureSkipVerify=true
+          - --serversTransport.maxIdleConnsPerHost=42
+          - --serversTransport.rootCAs[0]="foobar"
+          - --serversTransport.rootCAs[1]="foobar"
+          - --serversTransport.spiffe.ids[0]="foobar"
+          - --serversTransport.spiffe.ids[1]="foobar"
+          - --serversTransport.spiffe.trustDomain="foobar"
+          - --spiffe.workloadAPIAddr="foobar"
+          - --tcpServersTransport.dialKeepAlive="42s"
+          - --tcpServersTransport.dialTimeout="42s"
+          - --tcpServersTransport.terminationDelay="42s"
+          - --tcpServersTransport.tls.insecureSkipVerify=true
+          - --tcpServersTransport.tls.rootCAs[0]="foobar"
+          - --tcpServersTransport.tls.rootCAs[1]="foobar"
+          - --tcpServersTransport.tls.spiffe.ids[0]="foobar"
+          - --tcpServersTransport.tls.spiffe.ids[1]="foobar"
+          - --tcpServersTransport.tls.spiffe.trustDomain="foobar"
+          - --tracing.addInternals=true
+          - --tracing.capturedRequestHeaders[0]="foobar"
+          - --tracing.capturedRequestHeaders[1]="foobar"
+          - --tracing.capturedResponseHeaders[0]="foobar"
+          - --tracing.capturedResponseHeaders[1]="foobar"
+          - --tracing.globalAttributes.name0="foobar"
+          - --tracing.globalAttributes.name1="foobar"
+          - --tracing.otlp.grpc.endpoint="foobar"
+          - --tracing.otlp.grpc.headers.name0="foobar"
+          - --tracing.otlp.grpc.headers.name1="foobar"
+          - --tracing.otlp.grpc.insecure=true
+          - --tracing.otlp.grpc.tls.ca="foobar"
+          - --tracing.otlp.grpc.tls.cert="foobar"
+          - --tracing.otlp.grpc.tls.insecureSkipVerify=true
+          - --tracing.otlp.grpc.tls.key="foobar"
+          - --tracing.otlp.http.endpoint="foobar"
+          - --tracing.otlp.http.headers.name0="foobar"
+          - --tracing.otlp.http.headers.name1="foobar"
+          - --tracing.otlp.http.tls.ca="foobar"
+          - --tracing.otlp.http.tls.cert="foobar"
+          - --tracing.otlp.http.tls.insecureSkipVerify=true
+          - --tracing.otlp.http.tls.key="foobar"
+          - --tracing.safeQueryParams[0]="foobar"
+          - --tracing.safeQueryParams[1]="foobar"
+          - --tracing.sampleRate=42
+          - --tracing.serviceName="foobar"
+        image: docker.io/traefik:v3.1.2@sha256:ec1a82940b8e00eaeef33fb4113aa1d1573b2ebb6440e10c023743fe96f08475
+        imagePullPolicy: IfNotPresent
+        ports:
+          - name: EntryPoint0
+            containerPort: 10
+            protocol: udp
+          - name: metrics
+            containerPort: 9100
+            protocol: tcp
+          - name: traefik
+            containerPort: 9000
+            protocol: tcp
+          - name: web
+            containerPort: 8080
+            protocol: tcp
+          - name: websecure
+            containerPort: 8443
+            protocol: tcp
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: traefik
+            scheme: HTTP
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: traefik
+            scheme: HTTP
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ALL]
+          privileged: false
+          readOnlyRootFilesystem: true
+          seccompProfile:
+            type: RuntimeDefault
+      enableServiceLinks: false
+      imagePullSecrets:
+        []
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      priorityClassName: 
+      restartPolicy: Always
+      securityContext:
+        fsGroup: 22760
+        runAsGroup: 22760
+        runAsNonRoot: true
+        runAsUser: 44782
+      serviceAccountName: traefik-fully-customized
+      shareProcessNamespace: true # required to allow debug container to access traefik process
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      topologySpreadConstraints:
+        []

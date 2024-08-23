@@ -15,9 +15,6 @@
 # Chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 # Dumped at: {{ now | date "2006-01-02 15:04:05" }}
 # -----------------------------------------------------------------------------
-{{/*
-templates:
-*/}}
 $: {{ unset . "Files" | toYaml | nindent 2 }}
 
 templates:
@@ -26,5 +23,11 @@ templates:
   release.labels: {{ include "release.labels" . | nindent 4 }}
   release.labels.selector: {{ include "release.labels.selector" . | nindent 4 }}
   release.name: {{ include "release.name" . }}
+
+  service.ports.clusterIP: {{ include "service.ports.clusterIP" .Values.spec.service | nindent 4 }}
+  service.ports.loadBalancer: {{ include "service.ports.loadBalancer" .Values.spec.service | nindent 4 }}
+  service.ports.nodePort: {{ include "service.ports.nodePort" .Values.spec.service | nindent 4 }}
+
   traefik.args: {{ include "traefik.args" .Values.spec.traefik | nindent 4 }}
+  traefik.container.ports: {{ include "traefik.container.ports" .Values.spec.traefik | nindent 4 }}
 {{- end -}}

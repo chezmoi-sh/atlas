@@ -9,19 +9,19 @@ metadata:
     app.kubernetes.io/name: traefik-fully-customized
     app.kubernetes.io/instance: fully-customized
     app.kubernetes.io/version: "v3.1.2"
-    app.kubernetes.io/managed-by: Helm
     helm.sh/chart: traefik-0.1.0
+    app.kubernetes.io/managed-by: Helm
     custom.chezmoi.sh/everywhere: "true"
-  name: traefik:default-fully-customized:traefik
-  namespace: default
+  name: traefik:validations-fully-customized:traefik
+  namespace: validations
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: traefik:default-fully-customized:traefik
+  name: traefik:validations-fully-customized:traefik
 subjects:
   - kind: ServiceAccount
     name: traefik-fully-customized
-    namespace: default
+    namespace: validations
 ---
 # Source: traefik/templates/rbac/clusterrolebindings.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -33,16 +33,16 @@ metadata:
     app.kubernetes.io/name: traefik-fully-customized
     app.kubernetes.io/instance: fully-customized
     app.kubernetes.io/version: "v3.1.2"
-    app.kubernetes.io/managed-by: Helm
     helm.sh/chart: traefik-0.1.0
+    app.kubernetes.io/managed-by: Helm
     custom.chezmoi.sh/everywhere: "true"
-  name: traefik:default-fully-customized:traefik-crds
-  namespace: default
+  name: traefik:validations-fully-customized:traefik-crds
+  namespace: validations
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: traefik:default-fully-customized:traefik-crds
+  name: traefik:validations-fully-customized:traefik-crds
 subjects:
   - kind: ServiceAccount
     name: traefik-fully-customized
-    namespace: default
+    namespace: validations

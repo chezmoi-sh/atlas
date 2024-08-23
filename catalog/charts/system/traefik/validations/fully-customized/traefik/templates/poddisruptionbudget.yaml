@@ -9,16 +9,17 @@ metadata:
     app.kubernetes.io/name: traefik-fully-customized
     app.kubernetes.io/instance: fully-customized
     app.kubernetes.io/version: "v3.1.2"
-    app.kubernetes.io/managed-by: Helm
     helm.sh/chart: traefik-0.1.0
+    app.kubernetes.io/managed-by: Helm
     custom.chezmoi.sh/everywhere: "true"
   name: traefik-fully-customized
-  namespace: default
+  namespace: validations
 spec:
   selector:
     matchLabels: 
       app.kubernetes.io/instance: fully-customized
       app.kubernetes.io/version: "v3.1.2"
+      helm.sh/chart: traefik-0.1.0
 
   
   minAvailable: 2

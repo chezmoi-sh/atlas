@@ -4,41 +4,97 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations: 
+    {}
   labels: 
     app.kubernetes.io/name: traefik-default
     app.kubernetes.io/instance: default
     app.kubernetes.io/version: "v3.1.2"
-    app.kubernetes.io/managed-by: Helm
     helm.sh/chart: traefik-0.1.0
+    app.kubernetes.io/managed-by: Helm
   name: traefik-default
-  namespace: default
+  namespace: validations
 spec:
   replicas: 1
   selector:
     matchLabels: 
       app.kubernetes.io/instance: default
       app.kubernetes.io/version: "v3.1.2"
+      helm.sh/chart: traefik-0.1.0
   template:
-    # missing pod annotations/labels
     metadata:
       labels: 
         app.kubernetes.io/instance: default
-        app.kubernetes.io/version: "v3.1.2"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: traefik-default
+        app.kubernetes.io/version: v3.1.2
+        helm.sh/chart: traefik-0.1.0
     spec:
+      affinity:
+        {}
+      automountServiceAccountToken: true
       containers:
       - name: traefik
-        image: :v3.1.2
+        args:
+          - --api.dashboard=true
+          - --api.insecure=true
+          - --entryPoints.metrics.address=":9100"
+          - --entryPoints.traefik.address=":9000"
+          - --entryPoints.web.address=":8080"
+          - --entryPoints.websecure.address=":8443"
+          - --entryPoints.websecure.http.tls
+          - --global.checkNewVersion=false
+          - --global.sendAnonymousUsage=false
+          - --log.level="INFO"
+        image: ghcr.io/chezmoi-sh/traefik:v3.1.2@sha256:...
         imagePullPolicy: IfNotPresent
-        # generates ports from traefik configuration
-        # generates flags from traefik configuration (converts to --flag value)
+        ports:
+          - name: metrics
+            containerPort: 9100
+            protocol: tcp
+          - name: traefik
+            containerPort: 9000
+            protocol: tcp
+          - name: web
+            containerPort: 8080
+            protocol: tcp
+          - name: websecure
+            containerPort: 8443
+            protocol: tcp
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: traefik
+            scheme: HTTP
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: traefik
+            scheme: HTTP
+        resources:
+          {}
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
             drop: [ALL]
           privileged: false
           readOnlyRootFilesystem: true
+          seccompProfile:
+            type: RuntimeDefault
+      enableServiceLinks: false
+      imagePullSecrets:
+        []
+      nodeSelector:
+        {}
+      priorityClassName: 
+      restartPolicy: Always
       securityContext:
         fsGroup: 22760
         runAsGroup: 22760
         runAsNonRoot: true
         runAsUser: 44782
+      serviceAccountName: traefik-default
+      shareProcessNamespace: true # required to allow debug container to access traefik process
+      tolerations:
+        []
+      topologySpreadConstraints:
+        []

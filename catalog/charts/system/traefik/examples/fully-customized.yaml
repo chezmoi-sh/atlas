@@ -63,8 +63,10 @@ spec:
     metadata:
       annotations:
         custom.chezmoi.sh/service-annotation: "true"
+        custom.chezmoi.sh/service-annotation-2: "true"
       labels:
         custom.chezmoi.sh/service-label: "true"
+        custom.chezmoi.sh/service-label-2: "true"
 
     ports:
       http:
@@ -89,9 +91,11 @@ spec:
     clusterIP:
       metadata:
         annotations:
-          custom.chezmoi.sh/serice-clusterIP-annotation: "true"
+          custom.chezmoi.sh/service-clusterIP-annotation: "true"
+          custom.chezmoi.sh/service-annotation-2: overriden
         labels:
           custom.chezmoi.sh/service-clusterIP-label: "true"
+          custom.chezmoi.sh/service-label-2: overriden
       spec:
         externalTrafficPolicy: Cluster
         publishNotReadyAddresses: true
@@ -104,8 +108,10 @@ spec:
       metadata:
         annotations:
           custom.chezmoi.sh/service-loadBalancer-annotation: "true"
+          custom.chezmoi.sh/service-annotation-2: overriden
         labels:
           custom.chezmoi.sh/service-loadBalancer-label: "true"
+          custom.chezmoi.sh/service-label-2: overriden
       spec:
         allocateLoadBalancerNodePorts: true
         ipFamilies:
@@ -122,8 +128,10 @@ spec:
       metadata:
         annotations:
           custom.chezmoi.sh/service-nodePort-annotation: "true"
+          custom.chezmoi.sh/service-annotation-2: overriden
         labels:
           custom.chezmoi.sh/service-nodePort-label: "true"
+          custom.chezmoi.sh/service-label-2: overriden
       spec:
         publishNotReadyAddresses: true
         sessionAffinity: ClientIP
@@ -155,27 +163,407 @@ spec:
 
   # NOTE: configure Traefik to use all Kubernetes providers and expose metrics in Prometheus format.
   traefik:
-    api:
-      dashboard: false
-      insecure: false
-    entryPoints:
-      http:
-        address: :8080
-      dns:
-        address: :8053/udp
-      api:
-        address: :9000
-      metrics:
-        address: :9100
+    # api:
+    #   dashboard: false
+    #   insecure: false
+    # entryPoints:
+    #   http:
+    #     address: :8080
+    #   dns:
+    #     address: :8053/udp
+    #   api:
+    #     address: :9000
+    #   metrics:
+    #     address: :9100
+    # global:
+    #   checkNewVersion: false
+    #   sendAnonymousUsage: false
+    # log:
+    #   level: DEBUG
+    # metrics:
+    #   prometheus:
+    #     entryPoint: metrics
+    # providers:
+    #   kubernetesCRD: {}
+    #   kubernetesGateway: {}
+    #   kubernetesIngress: {}
+
     global:
-      checkNewVersion: false
-      sendAnonymousUsage: false
-    log:
-      level: DEBUG
-    metrics:
-      prometheus:
-        entryPoint: metrics
+      checkNewVersion: true
+      sendAnonymousUsage: true
+    serversTransport:
+      insecureSkipVerify: true
+      rootCAs:
+        - foobar
+        - foobar
+      maxIdleConnsPerHost: 42
+      forwardingTimeouts:
+        dialTimeout: 42s
+        responseHeaderTimeout: 42s
+        idleConnTimeout: 42s
+      spiffe:
+        ids:
+          - foobar
+          - foobar
+        trustDomain: foobar
+    tcpServersTransport:
+      dialKeepAlive: 42s
+      dialTimeout: 42s
+      terminationDelay: 42s
+      tls:
+        insecureSkipVerify: true
+        rootCAs:
+          - foobar
+          - foobar
+        spiffe:
+          ids:
+            - foobar
+            - foobar
+          trustDomain: foobar
+    entryPoints:
+      EntryPoint0:
+        address: :10/udp
+        reusePort: true
+        asDefault: true
+        transport:
+          lifeCycle:
+            requestAcceptGraceTimeout: 42s
+            graceTimeOut: 42s
+          respondingTimeouts:
+            readTimeout: 42s
+            writeTimeout: 42s
+            idleTimeout: 42s
+          keepAliveMaxTime: 42s
+          keepAliveMaxRequests: 42
+        proxyProtocol:
+          insecure: true
+          trustedIPs:
+            - foobar
+            - foobar
+        forwardedHeaders:
+          insecure: true
+          trustedIPs:
+            - foobar
+            - foobar
+        http:
+          redirections:
+            entryPoint:
+              to: foobar
+              scheme: foobar
+              permanent: true
+              priority: 42
+          middlewares:
+            - foobar
+            - foobar
+          tls:
+            options: foobar
+            certResolver: foobar
+            domains:
+              - main: foobar
+                sans:
+                  - foobar
+                  - foobar
+              - main: foobar
+                sans:
+                  - foobar
+                  - foobar
+          encodeQuerySemicolons: true
+        http2:
+          maxConcurrentStreams: 42
+        http3:
+          advertisedPort: 42
+        udp:
+          timeout: 42s
     providers:
-      kubernetesCRD: {}
-      kubernetesGateway: {}
-      kubernetesIngress: {}
+      providersThrottleDuration: 42s
+      kubernetesIngress:
+        endpoint: foobar
+        token: foobar
+        certAuthFilePath: foobar
+        namespaces:
+          - foobar
+          - foobar
+        labelSelector: foobar
+        ingressClass: foobar
+        ingressEndpoint:
+          ip: foobar
+          hostname: foobar
+          publishedService: foobar
+        throttleDuration: 42s
+        allowEmptyServices: true
+        allowExternalNameServices: true
+        disableIngressClassLookup: true
+        disableClusterScopeResources: true
+        nativeLBByDefault: true
+      kubernetesCRD:
+        endpoint: foobar
+        token: foobar
+        certAuthFilePath: foobar
+        namespaces:
+          - foobar
+          - foobar
+        allowCrossNamespace: true
+        allowExternalNameServices: true
+        labelSelector: foobar
+        ingressClass: foobar
+        throttleDuration: 42s
+        allowEmptyServices: true
+        nativeLBByDefault: true
+        disableClusterScopeResources: true
+      kubernetesGateway:
+        endpoint: foobar
+        token: foobar
+        certAuthFilePath: foobar
+        namespaces:
+          - foobar
+          - foobar
+        labelSelector: foobar
+        throttleDuration: 42s
+        experimentalChannel: true
+        statusAddress:
+          ip: foobar
+          hostname: foobar
+          service:
+            name: foobar
+            namespace: foobar
+    api:
+      insecure: true
+      dashboard: true
+      debug: true
+      disableDashboardAd: true
+    metrics:
+      addInternals: true
+      prometheus:
+        buckets:
+          - 42
+          - 42
+        addEntryPointsLabels: true
+        addRoutersLabels: true
+        addServicesLabels: true
+        entryPoint: foobar
+        manualRouting: true
+        headerLabels:
+          name0: foobar
+          name1: foobar
+      datadog:
+        address: foobar
+        pushInterval: 42s
+        addEntryPointsLabels: true
+        addRoutersLabels: true
+        addServicesLabels: true
+        prefix: foobar
+      statsD:
+        address: foobar
+        pushInterval: 42s
+        addEntryPointsLabels: true
+        addRoutersLabels: true
+        addServicesLabels: true
+        prefix: foobar
+      influxDB2:
+        address: foobar
+        token: foobar
+        pushInterval: 42s
+        org: foobar
+        bucket: foobar
+        addEntryPointsLabels: true
+        addRoutersLabels: true
+        addServicesLabels: true
+        additionalLabels:
+          name0: foobar
+          name1: foobar
+      otlp:
+        grpc:
+          endpoint: foobar
+          insecure: true
+          tls:
+            ca: foobar
+            cert: foobar
+            key: foobar
+            insecureSkipVerify: true
+          headers:
+            name0: foobar
+            name1: foobar
+        http:
+          endpoint: foobar
+          tls:
+            ca: foobar
+            cert: foobar
+            key: foobar
+            insecureSkipVerify: true
+          headers:
+            name0: foobar
+            name1: foobar
+        addEntryPointsLabels: true
+        addRoutersLabels: true
+        addServicesLabels: true
+        explicitBoundaries:
+          - 42
+          - 42
+        pushInterval: 42s
+    ping:
+      entryPoint: foobar
+      manualRouting: true
+      terminatingStatusCode: 42
+    log:
+      level: foobar
+      format: foobar
+      noColor: true
+      filePath: foobar
+      maxSize: 42
+      maxAge: 42
+      maxBackups: 42
+      compress: true
+    accessLog:
+      filePath: foobar
+      format: foobar
+      filters:
+        statusCodes:
+          - foobar
+          - foobar
+        retryAttempts: true
+        minDuration: 42s
+      fields:
+        defaultMode: foobar
+        names:
+          name0: foobar
+          name1: foobar
+        headers:
+          defaultMode: foobar
+          names:
+            name0: foobar
+            name1: foobar
+      bufferingSize: 42
+      addInternals: true
+    tracing:
+      serviceName: foobar
+      globalAttributes:
+        name0: foobar
+        name1: foobar
+      capturedRequestHeaders:
+        - foobar
+        - foobar
+      capturedResponseHeaders:
+        - foobar
+        - foobar
+      safeQueryParams:
+        - foobar
+        - foobar
+      sampleRate: 42
+      addInternals: true
+      otlp:
+        grpc:
+          endpoint: foobar
+          insecure: true
+          tls:
+            ca: foobar
+            cert: foobar
+            key: foobar
+            insecureSkipVerify: true
+          headers:
+            name0: foobar
+            name1: foobar
+        http:
+          endpoint: foobar
+          tls:
+            ca: foobar
+            cert: foobar
+            key: foobar
+            insecureSkipVerify: true
+          headers:
+            name0: foobar
+            name1: foobar
+    hostResolver:
+      cnameFlattening: true
+      resolvConfig: foobar
+      resolvDepth: 42
+    certificatesResolvers:
+      CertificateResolver0:
+        acme:
+          email: foobar
+          caServer: foobar
+          preferredChain: foobar
+          storage: foobar
+          keyType: foobar
+          eab:
+            kid: foobar
+            hmacEncoded: foobar
+          certificatesDuration: 42
+          dnsChallenge:
+            provider: foobar
+            delayBeforeCheck: 42s
+            resolvers:
+              - foobar
+              - foobar
+            disablePropagationCheck: true
+          httpChallenge:
+            entryPoint: foobar
+          tlsChallenge: {}
+        tailscale: {}
+      CertificateResolver1:
+        acme:
+          email: foobar
+          caServer: foobar
+          preferredChain: foobar
+          storage: foobar
+          keyType: foobar
+          eab:
+            kid: foobar
+            hmacEncoded: foobar
+          certificatesDuration: 42
+          dnsChallenge:
+            provider: foobar
+            delayBeforeCheck: 42s
+            resolvers:
+              - foobar
+              - foobar
+            disablePropagationCheck: true
+          httpChallenge:
+            entryPoint: foobar
+          tlsChallenge: {}
+        tailscale: {}
+    experimental:
+      plugins:
+        Descriptor0:
+          moduleName: foobar
+          version: foobar
+          settings:
+            envs:
+              - foobar
+              - foobar
+            mounts:
+              - foobar
+              - foobar
+        Descriptor1:
+          moduleName: foobar
+          version: foobar
+          settings:
+            envs:
+              - foobar
+              - foobar
+            mounts:
+              - foobar
+              - foobar
+      localPlugins:
+        LocalDescriptor0:
+          moduleName: foobar
+          settings:
+            envs:
+              - foobar
+              - foobar
+            mounts:
+              - foobar
+              - foobar
+        LocalDescriptor1:
+          moduleName: foobar
+          settings:
+            envs:
+              - foobar
+              - foobar
+            mounts:
+              - foobar
+              - foobar
+      kubernetesGateway: true
+    core:
+      defaultRuleSyntax: foobar
+    spiffe:
+      workloadAPIAddr: foobar

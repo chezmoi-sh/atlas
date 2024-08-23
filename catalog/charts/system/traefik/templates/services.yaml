@@ -1,0 +1,63 @@
+{{- $clusterIpPorts := include "service.ports.clusterIP" .Values.spec.service -}}
+{{- $loadBalancerPorts := include "service.ports.loadBalancer" .Values.spec.service -}}
+{{- $nodePortPorts := include "service.ports.nodePort" .Values.spec.service -}}
+{{- $ := . -}}
+{{- if gt (len $clusterIpPorts) 0 -}}
+{{- with .Values.spec.service.clusterIP }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  {{- $annotations := mergeOverwrite (include "release.annotations" $ | fromYaml) ($.Values.spec.service.metadata.annotations) (.metadata.annotations) }}
+  {{- $labels := mergeOverwrite (include "release.labels" $ | fromYaml) ($.Values.spec.service.metadata.labels) (.metadata.labels) }}
+  annotations: {{ $annotations | toYaml | default "{}" | nindent 4 }}
+  labels: {{ $labels | toYaml | nindent 4 }}
+  name: {{ include "release.name" $ }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  type: ClusterIP
+  selector: {{- include "release.labels.selector" $ | nindent 4 }}
+  ports: {{- $clusterIpPorts | nindent 4 }}
+  {{- with .spec }}{{ toYaml . | nindent 2 }}{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- if gt (len $loadBalancerPorts) 0 -}}
+{{- with .Values.spec.service.loadBalancer }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  {{- $annotations := mergeOverwrite (include "release.annotations" $ | fromYaml) ($.Values.spec.service.metadata.annotations) (.metadata.annotations) }}
+  {{- $labels := mergeOverwrite (include "release.labels" $ | fromYaml) ($.Values.spec.service.metadata.labels) (.metadata.labels) }}
+  annotations: {{ $annotations | toYaml | default "{}" | nindent 4 }}
+  labels: {{ $labels | toYaml | nindent 4 }}
+  name: {{ include "release.name" $ }}-lb
+  namespace: {{ $.Release.Namespace }}
+spec:
+  type: LoadBalancer
+  selector: {{- include "release.labels.selector" $ | nindent 4 }}
+  ports: {{- $loadBalancerPorts | nindent 4 }}
+  {{- with .spec }}{{ toYaml . | nindent 2 }}{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- if gt (len $nodePortPorts) 0 -}}
+{{- with .Values.spec.service.nodePort }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  {{- $annotations := mergeOverwrite (include "release.annotations" $ | fromYaml) ($.Values.spec.service.metadata.annotations) (.metadata.annotations) }}
+  {{- $labels := mergeOverwrite (include "release.labels" $ | fromYaml) ($.Values.spec.service.metadata.labels) (.metadata.labels) }}
+  annotations: {{ $annotations | toYaml | default "{}" | nindent 4 }}
+  labels: {{ $labels | toYaml | nindent 4 }}
+  name: {{ include "release.name" $ }}-np
+  namespace: {{ $.Release.Namespace }}
+spec:
+  type: NodePort
+  selector: {{- include "release.labels.selector" $ | nindent 4 }}
+  ports: {{- $nodePortPorts | nindent 4 }}
+  {{- with .spec }}{{ toYaml . | nindent 2 }}{{- end -}}
+{{- end -}}
+{{- end -}}

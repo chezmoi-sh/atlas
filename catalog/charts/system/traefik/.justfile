@@ -53,7 +53,7 @@ compile_examples example: (clean_validations example)
     @: {{ if path_exists(example) == "false" { error("file not found... aborted") } else {""} }}
     helm template {{ replace_regex(example, 'examples/(?<name>.+).yaml', '$name') }} . \
         --debug \
-        --namespace default \
+        --namespace validations \
         --values {{ example }} \
         --output-dir validations/{{ replace_regex(example, 'examples/(?<name>.+).yaml', '$name') }}
 

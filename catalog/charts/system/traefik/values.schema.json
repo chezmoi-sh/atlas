@@ -119,6 +119,9 @@
 						},
 						"tolerations": {
 							"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/tolerations"
+						},
+						"topologySpreadConstraints": {
+							"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/topologySpreadConstraints"
 						}
 					},
 					"description": "Specification of the desired scheduling behavior.",
@@ -333,6 +336,11 @@
 											"description": "Type of service to expose as.",
 											"type": "array"
 										},
+										"nodePort": {
+											"minimum": 0,
+											"description": "The port on each node on which this service is exposed when type is NodePort or LoadBalancer. Usually assigned by the system.",
+											"type": "integer"
+										},
 										"port": {
 											"minimum": 0,
 											"description": "The port number the service should expose.",
@@ -341,11 +349,11 @@
 										"protocol": {
 											"default": "TCP",
 											"description": "The protocol the service should expose.",
-											"enum": ["TCP", "UDP"]
+											"enum": ["STCP", "TCP", "UDP"]
 										}
 									},
 									"type": "object",
-									"required": ["appProtocol", "port", "protocol", "exposeAs"]
+									"required": ["port", "protocol", "exposeAs"]
 								}
 							},
 							"description": "Ports that the service should expose.",
@@ -416,6 +424,9 @@
 											},
 											"description": "List of containers that will be run in the pod.",
 											"title": "containers"
+										},
+										"imagePullSecrets": {
+											"$ref": "https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/imagePullSecrets"
 										}
 									},
 									"description": "Pod specification.",
@@ -431,7 +442,7 @@
 				},
 				"traefik": {
 					"default": {},
-					"$ref": "https://json.schemastore.org/traefik-v2.json",
+					"$ref": "https://json.schemastore.org/traefik-v3.json",
 					"description": "Traefik configuration. See https://doc.traefik.io/traefik/reference/static-configuration/file/ for more details."
 				}
 			},

@@ -4,14 +4,15 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   annotations: 
+    {}
   labels: 
     app.kubernetes.io/name: traefik-default
     app.kubernetes.io/instance: default
     app.kubernetes.io/version: "v3.1.2"
-    app.kubernetes.io/managed-by: Helm
     helm.sh/chart: traefik-0.1.0
-  name: traefik:default-default:traefik
-  namespace: default
+    app.kubernetes.io/managed-by: Helm
+  name: traefik:validations-default:traefik
+  namespace: validations
 rules:
   - apiGroups: [""]
     resources: ["nodes", "services", "secrets"]

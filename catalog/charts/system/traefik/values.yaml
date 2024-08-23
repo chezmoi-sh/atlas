@@ -116,6 +116,12 @@ spec:
             # @schema@
             resources: {}
 
+        # @schema@
+        # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/imagePullSecrets
+        # required: false
+        # @schema@
+        imagePullSecrets: []
+
 
   # (--- S C E D U L I N G   S P E C I F I C A T I O N ---)
   # @schema@
@@ -130,12 +136,6 @@ spec:
     affinity: {}
 
     # @schema@
-    # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/tolerations
-    # required: false
-    # @schema@
-    tolerations: []
-
-    # @schema@
     # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/nodeSelector
     # required: false
     # @schema@
@@ -146,6 +146,18 @@ spec:
     # required: false
     # @schema@
     priorityClassName: ""
+
+    # @schema@
+    # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/tolerations
+    # required: false
+    # @schema@
+    tolerations: []
+
+    # @schema@
+    # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/podspec-v1.json#/properties/topologySpreadConstraints
+    # required: false
+    # @schema@
+    topologySpreadConstraints: []
 
 
   # (--- A U T O S C A L I N G   S P E C I F I C A T I O N ---)
@@ -240,24 +252,31 @@ spec:
     #  ^[a-z0-9.-]+$:
     #    type: object
     #    properties:
+    #      disabled:
+    #        description: If true, the port will not be exposed.
+    #        type: boolean
     #      appProtocol:
     #        description: The application protocol used as hint for implementation to offer behavior for protocols that they understand.
     #        type: string
-    #      port:
-    #        description: The port number the service should expose.
-    #        type: integer
-    #        minimum: 0
-    #      protocol:
-    #        description: The protocol the service should expose.
-    #        enum: [TCP, UDP]
-    #        default: TCP
     #      exposeAs:
     #        description: Type of service to expose as.
     #        type: array
     #        items:
     #          type: string
     #          enum: [ClusterIP, NodePort, LoadBalancer]
-    #    requiredProperties: [appProtocol, port, protocol, exposeAs]
+    #      nodePort:
+    #        description: The port on each node on which this service is exposed when type is NodePort or LoadBalancer. Usually assigned by the system.
+    #        type: integer
+    #        minimum: 0
+    #      port:
+    #        description: The port number the service should expose.
+    #        type: integer
+    #        minimum: 0
+    #      protocol:
+    #        description: The protocol the service should expose.
+    #        enum: [STCP, TCP, UDP]
+    #        default: TCP
+    #    requiredProperties: [port, protocol, exposeAs]
     # default: {}
     # @schema@
     # Ports that the service should expose.
@@ -288,6 +307,55 @@ spec:
         appProtocol: http
         exposeAs:
           - ClusterIP
+
+    # @schema@
+    # required: false
+    # @schema@
+    # Configures the ClusterIP service if any ports are exposed as ClusterIP.
+    clusterIP:
+      # @schema@
+      # required: false
+      # @schema@
+      # Additional service metadata.
+      metadata:
+        # @schema@
+        # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations
+        # required: false
+        # @schema@
+        annotations: {}
+
+        # @schema@
+        # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels
+        # required: false
+        # @schema@
+        labels: {}
+
+      # @schema@
+      # required: false
+      # properties:
+      #   clusterIP:
+      #     title: clusterIP
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/clusterIP
+      #   clusterIPs:
+      #     title: clusterIPs
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/clusterIPs
+      #   externalTrafficPolicy:
+      #     title: externalTrafficPolicy
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/externalTrafficPolicy
+      #     enum: [Cluster, Local]
+      #   publishNotReadyAddresses:
+      #     title: publishNotReadyAddresses
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/publishNotReadyAddresses
+      #   sessionAffinity:
+      #     title: sessionAffinity
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/sessionAffinity
+      #     enum: [None, ClientIP]
+      #   sessionAffinityConfig:
+      #     title: sessionAffinityConfig
+      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/sessionAffinityConfig
+      # @schema@
+      # ClusterIP service specification.
+      spec: {}
 
     # @schema@
     # required: false
@@ -396,60 +464,11 @@ spec:
       # NodePort service specification.
       spec: {}
 
-    # @schema@
-    # required: false
-    # @schema@
-    # Configures the ClusterIP service if any ports are exposed as ClusterIP.
-    clusterIP:
-      # @schema@
-      # required: false
-      # @schema@
-      # Additional service metadata.
-      metadata:
-        # @schema@
-        # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations
-        # required: false
-        # @schema@
-        annotations: {}
-
-        # @schema@
-        # $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels
-        # required: false
-        # @schema@
-        labels: {}
-
-      # @schema@
-      # required: false
-      # properties:
-      #   clusterIP:
-      #     title: clusterIP
-      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/clusterIP
-      #   clusterIPs:
-      #     title: clusterIPs
-      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/clusterIPs
-      #   externalTrafficPolicy:
-      #     title: externalTrafficPolicy
-      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/externalTrafficPolicy
-      #     enum: [Cluster, Local]
-      #   publishNotReadyAddresses:
-      #     title: publishNotReadyAddresses
-      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/publishNotReadyAddresses
-      #   sessionAffinity:
-      #     title: sessionAffinity
-      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/sessionAffinity
-      #     enum: [None, ClientIP]
-      #   sessionAffinityConfig:
-      #     title: sessionAffinityConfig
-      #     $ref: https://raw.githubusercontent.com/chezmoi-sh/kubernetes-json-schema/master/v1.30.0-standalone-strict/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/sessionAffinityConfig
-      # @schema@
-      # ClusterIP service specification.
-      spec: {}
-
 
   # (--- A P P L I C A T I O N   C O N F I G U R A T I O N ---)
   # @schema@
   # description: Traefik configuration. See https://doc.traefik.io/traefik/reference/static-configuration/file/ for more details.
-  # $ref: https://json.schemastore.org/traefik-v2.json
+  # $ref: https://json.schemastore.org/traefik-v3.json
   # required: false
   # default: {}
   # @schema@

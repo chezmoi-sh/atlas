@@ -1,0 +1,147 @@
+---
+# Source: traefik/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: 
+    custom.chezmoi.sh/everywhere: "true"
+    custom.chezmoi.sh/service-annotation: "true"
+    custom.chezmoi.sh/service-annotation-2: overriden
+    custom.chezmoi.sh/service-clusterIP-annotation: "true"
+  labels: 
+    app.kubernetes.io/instance: fully-customized
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: traefik-fully-customized
+    app.kubernetes.io/version: v3.1.2
+    custom.chezmoi.sh/everywhere: "true"
+    custom.chezmoi.sh/service-clusterIP-label: "true"
+    custom.chezmoi.sh/service-label: "true"
+    custom.chezmoi.sh/service-label-2: overriden
+    helm.sh/chart: traefik-0.1.0
+  name: traefik-fully-customized
+  namespace: validations
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: fully-customized
+    app.kubernetes.io/version: "v3.1.2"
+    helm.sh/chart: traefik-0.1.0
+  ports:
+    - name: metrics
+      port: 9000
+      targetPort: metrics
+      protocol: TCP
+      appProtocol: http
+    - name: traefik
+      port: 9000
+      targetPort: traefik
+      protocol: TCP
+      appProtocol: http
+    - name: web
+      port: 80
+      targetPort: web
+      protocol: TCP
+      appProtocol: http
+    - name: websecure
+      port: 443
+      targetPort: websecure
+      protocol: TCP
+      appProtocol: https
+  externalTrafficPolicy: Cluster
+  publishNotReadyAddresses: true
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 21600
+---
+# Source: traefik/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: 
+    custom.chezmoi.sh/everywhere: "true"
+    custom.chezmoi.sh/service-annotation: "true"
+    custom.chezmoi.sh/service-annotation-2: overriden
+    custom.chezmoi.sh/service-loadBalancer-annotation: "true"
+  labels: 
+    app.kubernetes.io/instance: fully-customized
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: traefik-fully-customized
+    app.kubernetes.io/version: v3.1.2
+    custom.chezmoi.sh/everywhere: "true"
+    custom.chezmoi.sh/service-label: "true"
+    custom.chezmoi.sh/service-label-2: overriden
+    custom.chezmoi.sh/service-loadBalancer-label: "true"
+    helm.sh/chart: traefik-0.1.0
+  name: traefik-fully-customized-lb
+  namespace: validations
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/instance: fully-customized
+    app.kubernetes.io/version: "v3.1.2"
+    helm.sh/chart: traefik-0.1.0
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+      appProtocol: http
+    
+    
+    - name: web
+      port: 80
+      targetPort: web
+      protocol: TCP
+      appProtocol: http
+    - name: websecure
+      port: 443
+      targetPort: websecure
+      protocol: TCP
+      appProtocol: https
+  allocateLoadBalancerNodePorts: true
+  externalTrafficPolicy: Local
+  healthCheckNodePort: 30000
+  ipFamilies:
+  - IPv4
+  - IPv6
+  ipFamilyPolicy: PreferDualStack
+  publishNotReadyAddresses: true
+  sessionAffinity: None
+  trafficDistribution: PreferClose
+---
+# Source: traefik/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: 
+    custom.chezmoi.sh/everywhere: "true"
+    custom.chezmoi.sh/service-annotation: "true"
+    custom.chezmoi.sh/service-annotation-2: overriden
+    custom.chezmoi.sh/service-nodePort-annotation: "true"
+  labels: 
+    app.kubernetes.io/instance: fully-customized
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: traefik-fully-customized
+    app.kubernetes.io/version: v3.1.2
+    custom.chezmoi.sh/everywhere: "true"
+    custom.chezmoi.sh/service-label: "true"
+    custom.chezmoi.sh/service-label-2: overriden
+    custom.chezmoi.sh/service-nodePort-label: "true"
+    helm.sh/chart: traefik-0.1.0
+  name: traefik-fully-customized-np
+  namespace: validations
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/instance: fully-customized
+    app.kubernetes.io/version: "v3.1.2"
+    helm.sh/chart: traefik-0.1.0
+  ports:
+    - name: dns
+      port: 53
+      targetPort: dns
+      protocol: UDP
+      appProtocol: dns
+  publishNotReadyAddresses: true
+  sessionAffinity: ClientIP
