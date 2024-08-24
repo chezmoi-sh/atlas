@@ -1,0 +1,21 @@
+---
+# Source: traefik/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations: 
+    helm.sh/hook: test
+  labels: 
+    app.kubernetes.io/name: traefik-http-https
+    app.kubernetes.io/instance: http-https
+    app.kubernetes.io/version: "v3.1.2"
+    helm.sh/chart: traefik-0.1.0
+    app.kubernetes.io/managed-by: Helm
+  name: traefik-http-https-test-connection
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['traefik-http-https:9000']
+  restartPolicy: Never

@@ -6,12 +6,12 @@ metadata:
   annotations: 
     {}
   labels: 
-    app.kubernetes.io/name: traefik-default
-    app.kubernetes.io/instance: default
+    app.kubernetes.io/name: traefik-http-https
+    app.kubernetes.io/instance: http-https
     app.kubernetes.io/version: "v3.1.2"
     helm.sh/chart: traefik-0.1.0
     app.kubernetes.io/managed-by: Helm
-  name: traefik:validations-default:traefik
+  name: traefik:validations-http-https:traefik
   namespace: validations
 rules:
   - apiGroups: [""]
@@ -20,6 +20,32 @@ rules:
   - apiGroups: ["discovery.k8s.io"]
     resources: ["endpointslices"]
     verbs: ["list", "watch"]
+  - apiGroups: ["extensions", "networking.k8s.io"]
+    resources: ["ingressclasses", "ingresses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["extensions", "networking.k8s.io"]
+    resources: ["ingresses/status"]
+    verbs: ["update"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["list", "watch"]
+  - apiGroups: [gateway.networking.k8s.io]
+    resources:
+      - gatewayclasses
+      - gateways
+      - httproutes
+      - referencegrants
+      - tcproutes
+      - tlsroutes
+    verbs: [get, list, watch]
+  - apiGroups: [gateway.networking.k8s.io]
+    resources:
+      - gatewayclasses/status
+      - gateways/status
+      - httproutes/status
+      - tcproutes/status
+      - tlsroutes/status
+    verbs: [update]
 ---
 # Source: traefik/templates/rbac/clusterroles.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -28,15 +54,15 @@ metadata:
   annotations: 
     {}
   labels: 
-    app.kubernetes.io/name: traefik-default
-    app.kubernetes.io/instance: default
+    app.kubernetes.io/name: traefik-http-https
+    app.kubernetes.io/instance: http-https
     app.kubernetes.io/version: "v3.1.2"
     helm.sh/chart: traefik-0.1.0
     app.kubernetes.io/managed-by: Helm
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
     rbac.authorization.k8s.io/aggregate-to-edit: "true"
     rbac.authorization.k8s.io/aggregate-to-view: "true"
-  name: traefik:validations-default:traefik-crds
+  name: traefik:validations-http-https:traefik-crds
   namespace: validations
 rules:
   - apiGroups: [traefik.io]

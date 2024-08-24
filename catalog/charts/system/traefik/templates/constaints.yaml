@@ -1,0 +1,20 @@
+---
+# This file is only here to add some constraints to the Helm chart, like
+# refusing some values that are already hardcoded in the templates.
+# Here is a list of constraints that are enforced by this file:
+# - spec.traefik.entryPoints.traefik.address must never be changed (required by the liveness and readiness probes)
+{{- if ne (.Values.spec | dig "traefik" "entryPoints" "traefik" "address" "<missing>") ":9000" -}}
+{{- fail "traefik.spec.traefik.entryPoints.traefik.address must never be changed (required by the liveness and readiness probes)" -}}
+{{- end }}
+# - spec.traefik.ping must never be changed too (required by the liveness and readiness probes)
+{{- if ne (.Values.spec | dig "traefik" "ping" dict | toJson) "{\"entryPoint\":\"traefik\"}" -}}
+{{- fail "traefik.spec.traefik.ping must never be changed (required by the liveness and readiness probes)" -}}
+{{- end }}
+# - spec.service.ports.traefik.protocol must always be TCP (required by Helm to be able to test the Traefik connectivity)
+{{- if ne (.Values.spec | dig "service" "ports" "traefik" "protocol" "<missing>") "TCP" -}}
+{{- fail "traefik.spec.service.ports.traefik.protocol must always be TCP" -}}
+{{- end }}
+# - spec.service.ports.traefik.appProtocol must always be http (required by Helm to be able to test the Traefik connectivity)
+{{- if ne (.Values.spec | dig "service" "ports" "traefik" "appProtocol" "<missing>") "http" -}}
+{{- fail "traefik.spec.service.ports.traefik.appProtocol must always be http" -}}
+{{- end }}

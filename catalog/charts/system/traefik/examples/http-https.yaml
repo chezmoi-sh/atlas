@@ -1,0 +1,45 @@
+# This configuration contains values that are commonly used with Traefik:
+# - The Traefik dashboard is enabled
+# - A web and a websecure entrypoint are defined
+# - HTTP is automatically redirected to HTTPS
+---
+# yaml-language-server: $schema=../values.schema.json
+apiVersion: apps.chezmoi.sh/v1alpha1
+kind: Traefik
+metadata: {}
+spec:
+  service:
+    ports:
+      web:
+        appProtocol: http
+        exposeAs: [LoadBalancer]
+        port: 80
+        protocol: TCP
+      websecure:
+        appProtocol: https
+        exposeAs: [LoadBalancer]
+        port: 443
+        protocol: TCP
+
+  traefik:
+    api:
+      dashboard: true
+      disableDashboardAd: true
+    entryPoints:
+      web:
+        address: :80
+        http:
+          redirections:
+            entryPoint:
+              to: websecure
+              scheme: https
+      websecure:
+        address: :443
+        http:
+          tls: {}
+        asDefault: true
+    experimental:
+      kubernetesGateway: true
+    providers:
+      kubernetesIngress: {}
+      kubernetesGateway: {}

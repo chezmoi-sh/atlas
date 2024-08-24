@@ -6,26 +6,26 @@ metadata:
   annotations: 
     {}
   labels: 
-    app.kubernetes.io/name: traefik-default
-    app.kubernetes.io/instance: default
+    app.kubernetes.io/name: traefik-http-https
+    app.kubernetes.io/instance: http-https
     app.kubernetes.io/version: "v3.1.2"
     helm.sh/chart: traefik-0.1.0
     app.kubernetes.io/managed-by: Helm
-  name: traefik-default
+  name: traefik-http-https
   namespace: validations
 spec:
   replicas: 1
   selector:
     matchLabels: 
-      app.kubernetes.io/instance: default
+      app.kubernetes.io/instance: http-https
       app.kubernetes.io/version: "v3.1.2"
       helm.sh/chart: traefik-0.1.0
   template:
     metadata:
       labels: 
-        app.kubernetes.io/instance: default
+        app.kubernetes.io/instance: http-https
         app.kubernetes.io/managed-by: Helm
-        app.kubernetes.io/name: traefik-default
+        app.kubernetes.io/name: traefik-http-https
         app.kubernetes.io/version: v3.1.2
         helm.sh/chart: traefik-0.1.0
     spec:
@@ -35,18 +35,37 @@ spec:
       containers:
       - name: traefik
         args:
-          - --entryPoints.traefik.address=":9000"
-          - --global.checkNewVersion=false
-          - --global.sendAnonymousUsage=false
-          - --log.level="INFO"
-          - --ping.entryPoint="traefik"
-          - --providers.kubernetesCRD=true
-        image: ghcr.io/chezmoi-sh/traefik:v3.1.2@sha256:...
+          - "--api.dashboard=true"
+          - "--api.disableDashboardAd=true"
+          - "--entryPoints.traefik.address=:9000"
+          - "--entryPoints.web.address=:80"
+          - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
+          - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
+          - "--entryPoints.websecure.address=:443"
+          - "--entryPoints.websecure.asDefault=true"
+          - "--entryPoints.websecure.http.tls=true"
+          - "--experimental.kubernetesGateway=true"
+          - "--global.checkNewVersion=false"
+          - "--global.sendAnonymousUsage=false"
+          - "--log.level=INFO"
+          - "--ping.entryPoint=traefik"
+          - "--providers.kubernetesCRD=true"
+          - "--providers.kubernetesGateway=true"
+          - "--providers.kubernetesIngress=true"
+        image: ghcr.io/chezmoi-sh/flakes/traefiklabs/traefik:3.1.2-24.11-nightly@sha256:dac53277969c8d4e10b250a3eea33b363563608e4812d1a0294c67ffe87b7e7a
         imagePullPolicy: IfNotPresent
         ports:
           - name: traefik
             containerPort: 9000
-            protocol: tcp
+            protocol: TCP
+            appProtocol: http
+          - name: web
+            containerPort: 80
+            protocol: TCP
+            appProtocol: http
+          - name: websecure
+            containerPort: 443
+            protocol: TCP
             appProtocol: http
         livenessProbe:
           httpGet:
@@ -80,7 +99,7 @@ spec:
         runAsGroup: 22760
         runAsNonRoot: true
         runAsUser: 44782
-      serviceAccountName: traefik-default
+      serviceAccountName: traefik-http-https
       shareProcessNamespace: true # required to allow debug container to access traefik process
       tolerations:
         []

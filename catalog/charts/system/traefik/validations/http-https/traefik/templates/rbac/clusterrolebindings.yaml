@@ -6,20 +6,20 @@ metadata:
   annotations: 
     {}
   labels: 
-    app.kubernetes.io/name: traefik-default
-    app.kubernetes.io/instance: default
+    app.kubernetes.io/name: traefik-http-https
+    app.kubernetes.io/instance: http-https
     app.kubernetes.io/version: "v3.1.2"
     helm.sh/chart: traefik-0.1.0
     app.kubernetes.io/managed-by: Helm
-  name: traefik:validations-default:traefik
+  name: traefik:validations-http-https:traefik
   namespace: validations
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: traefik:validations-default:traefik
+  name: traefik:validations-http-https:traefik
 subjects:
   - kind: ServiceAccount
-    name: traefik-default
+    name: traefik-http-https
     namespace: validations
 ---
 # Source: traefik/templates/rbac/clusterrolebindings.yaml
@@ -29,18 +29,18 @@ metadata:
   annotations: 
     {}
   labels: 
-    app.kubernetes.io/name: traefik-default
-    app.kubernetes.io/instance: default
+    app.kubernetes.io/name: traefik-http-https
+    app.kubernetes.io/instance: http-https
     app.kubernetes.io/version: "v3.1.2"
     helm.sh/chart: traefik-0.1.0
     app.kubernetes.io/managed-by: Helm
-  name: traefik:validations-default:traefik-crds
+  name: traefik:validations-http-https:traefik-crds
   namespace: validations
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: traefik:validations-default:traefik-crds
+  name: traefik:validations-http-https:traefik-crds
 subjects:
   - kind: ServiceAccount
-    name: traefik-default
+    name: traefik-http-https
     namespace: validations

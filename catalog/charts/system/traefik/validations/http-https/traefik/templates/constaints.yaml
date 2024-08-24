@@ -1,0 +1,9 @@
+---
+# Source: traefik/templates/constaints.yaml
+# This file is only here to add some constraints to the Helm chart, like
+# refusing some values that are already hardcoded in the templates.
+# Here is a list of constraints that are enforced by this file:
+# - spec.traefik.entryPoints.traefik.address must never be changed (required by the liveness and readiness probes)
+# - spec.traefik.ping must never be changed too (required by the liveness and readiness probes)
+# - spec.service.ports.traefik.protocol must always be TCP (required by Helm to be able to test the Traefik connectivity)
+# - spec.service.ports.traefik.appProtocol must always be http (required by Helm to be able to test the Traefik connectivity)

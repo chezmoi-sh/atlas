@@ -19,8 +19,8 @@
 			"type": "boolean"
 		},
 		"kind": {
-			"default": "Application",
-			"const": "Application",
+			"default": "Traefik",
+			"const": "Traefik",
 			"description": "The kind of the Application resource.",
 			"title": "kind"
 		},
@@ -353,7 +353,7 @@
 										}
 									},
 									"type": "object",
-									"required": ["port", "protocol", "exposeAs"]
+									"required": ["exposeAs", "port", "protocol"]
 								}
 							},
 							"description": "Ports that the service should expose.",
@@ -451,5 +451,6 @@
 		}
 	},
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"type": "object"
+	"type": "object",
+	"required": ["metadata", "spec"]
 }

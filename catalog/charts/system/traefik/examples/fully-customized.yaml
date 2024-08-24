@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../values.schema.json
 apiVersion: apps.chezmoi.sh/v1alpha1
-kind: Application
+kind: Traefik
 metadata:
   annotations:
     custom.chezmoi.sh/everywhere: "true"
@@ -400,10 +400,6 @@ spec:
           - 42
           - 42
         pushInterval: 42s
-    ping:
-      entryPoint: foobar
-      manualRouting: true
-      terminatingStatusCode: 42
     log:
       level: foobar
       format: foobar

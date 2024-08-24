@@ -86,8 +86,8 @@ spec:
           - --certificatesResolvers.CertificateResolver0.acme.keyType="foobar"
           - --certificatesResolvers.CertificateResolver0.acme.preferredChain="foobar"
           - --certificatesResolvers.CertificateResolver0.acme.storage="foobar"
-          - --certificatesResolvers.CertificateResolver0.acme.tlsChallenge
-          - --certificatesResolvers.CertificateResolver0.tailscale
+          - --certificatesResolvers.CertificateResolver0.acme.tlsChallenge=true
+          - --certificatesResolvers.CertificateResolver0.tailscale=true
           - --certificatesResolvers.CertificateResolver1.acme.caServer="foobar"
           - --certificatesResolvers.CertificateResolver1.acme.certificatesDuration=42
           - --certificatesResolvers.CertificateResolver1.acme.dnsChallenge.delayBeforeCheck="42s"
@@ -102,8 +102,8 @@ spec:
           - --certificatesResolvers.CertificateResolver1.acme.keyType="foobar"
           - --certificatesResolvers.CertificateResolver1.acme.preferredChain="foobar"
           - --certificatesResolvers.CertificateResolver1.acme.storage="foobar"
-          - --certificatesResolvers.CertificateResolver1.acme.tlsChallenge
-          - --certificatesResolvers.CertificateResolver1.tailscale
+          - --certificatesResolvers.CertificateResolver1.acme.tlsChallenge=true
+          - --certificatesResolvers.CertificateResolver1.tailscale=true
           - --core.defaultRuleSyntax="foobar"
           - --entryPoints.EntryPoint0.address=":10/udp"
           - --entryPoints.EntryPoint0.asDefault=true
@@ -139,11 +139,7 @@ spec:
           - --entryPoints.EntryPoint0.transport.respondingTimeouts.readTimeout="42s"
           - --entryPoints.EntryPoint0.transport.respondingTimeouts.writeTimeout="42s"
           - --entryPoints.EntryPoint0.udp.timeout="42s"
-          - --entryPoints.metrics.address=":9100"
           - --entryPoints.traefik.address=":9000"
-          - --entryPoints.web.address=":8080"
-          - --entryPoints.websecure.address=":8443"
-          - --entryPoints.websecure.http.tls
           - --experimental.kubernetesGateway=true
           - --experimental.localPlugins.LocalDescriptor0.moduleName="foobar"
           - --experimental.localPlugins.LocalDescriptor0.settings.envs[0]="foobar"
@@ -233,9 +229,7 @@ spec:
           - --metrics.statsD.address="foobar"
           - --metrics.statsD.prefix="foobar"
           - --metrics.statsD.pushInterval="42s"
-          - --ping.entryPoint="foobar"
-          - --ping.manualRouting=true
-          - --ping.terminatingStatusCode=42
+          - --ping.entryPoint="traefik"
           - --providers.kubernetesCRD.allowCrossNamespace=true
           - --providers.kubernetesCRD.allowEmptyServices=true
           - --providers.kubernetesCRD.allowExternalNameServices=true
@@ -330,18 +324,11 @@ spec:
           - name: EntryPoint0
             containerPort: 10
             protocol: udp
-          - name: metrics
-            containerPort: 9100
-            protocol: tcp
+            appProtocol: http
           - name: traefik
             containerPort: 9000
             protocol: tcp
-          - name: web
-            containerPort: 8080
-            protocol: tcp
-          - name: websecure
-            containerPort: 8443
-            protocol: tcp
+            appProtocol: http
         livenessProbe:
           httpGet:
             path: /ping

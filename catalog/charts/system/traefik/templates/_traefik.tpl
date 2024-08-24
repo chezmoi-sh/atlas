@@ -5,7 +5,7 @@
 {{/* Generate args based on traefik configuration */}}
 {{- define "traefik.args" -}}
 {{- range $key, $value := . }}
-  {{- include "traefik.args.rec" (list (printf "- --%s" $key) $value) }}
+  {{- include "traefik.args.rec" (list (printf "%s" $key) $value) }}
 {{- end -}}
 {{- end -}}
 
@@ -15,7 +15,7 @@
 
 {{- if typeIs "map[string]interface {}" $value }}
   {{- if eq (len $value) 0 }}
-{{ $key }}
+- {{ printf "--%s=true" $key | quote }}
   {{- else }}
     {{- include "traefik.args.object" (list $key $value) }}
   {{- end }}
@@ -24,10 +24,8 @@
     {{- include "traefik.args.rec" (list (printf "%s[%d]" $key $index) $item) }}
   {{- end -}}
 {{- else if (eq $value nil) }}
-{{- else if typeIs "string" $value }}
-{{ $key }}={{ $value | quote }}
 {{- else }}
-{{ $key }}={{ $value }}
+- {{ printf "--%s=%v" $key $value | quote }}
 {{- end }}
 {{- end -}}
 
@@ -51,9 +49,10 @@
 {{- fail (printf "spec.traefik.entryPoints.%s.address is invalid: expected '[host]:port[/tcp|/udp]' but got '%s'" $name $address) }}
 {{- end }}
 {{- $port := regexReplaceAll "^(?:[^:]+)?:(\\d+)(?:/(?:udp|tcp))?$" $address "${1}" }}
-{{- $protocol := regexReplaceAll "^(?:[^:]+)?:\\d+(/(udp|tcp))?$" $address "${2}" | lower | default "tcp" }}
+{{- $protocol := regexReplaceAll "^(?:[^:]+)?:\\d+(/(udp|tcp))?$" $address "${2}" | default "tcp" }}
 - name: {{ $name }}
   containerPort: {{ $port }}
-  protocol: {{ $protocol }}
+  protocol: {{ $protocol | upper }}
+  appProtocol: http
 {{- end -}}
 {{- end -}}

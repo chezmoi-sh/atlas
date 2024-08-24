@@ -9,14 +9,14 @@
 apiVersion: apps.chezmoi.sh/v1alpha1
 
 # @schema@
-# const: Application
+# const: Traefik
 # description: The kind of the Application resource.
 # required: false
 # @schema@
-kind: Application
+kind: Traefik
 
 # @schema@
-# required: false
+# required: true
 # @schema@
 # Common metadata for all resources.
 metadata:
@@ -33,7 +33,7 @@ metadata:
   labels: {}
 
 # @schema@
-# required: false
+# required: true
 # @schema@
 # Specification of the desired behavior of the application.
 spec:
@@ -91,14 +91,14 @@ spec:
               # required: false
               # @schema@
               # Container image repository.
-              repository: ghcr.io/chezmoi-sh/traefik
+              repository: ghcr.io/chezmoi-sh/flakes/traefiklabs/traefik
 
               # @schema@
               # description: Container image tag with optional sha256 digest.
               # required: false
               # @schema@
               # renovate: datasource=docker depName=ghcr.io/chezmoi-sh/traefik versioning=semver
-              tag: v3.1.2@sha256:...
+              tag: 3.1.2-24.11-nightly@sha256:dac53277969c8d4e10b250a3eea33b363563608e4812d1a0294c67ffe87b7e7a
 
               # @schema@
               # required: false
@@ -252,61 +252,44 @@ spec:
     #  ^[a-z0-9.-]+$:
     #    type: object
     #    properties:
-    #      disabled:
-    #        description: If true, the port will not be exposed.
-    #        type: boolean
     #      appProtocol:
     #        description: The application protocol used as hint for implementation to offer behavior for protocols that they understand.
+    #        required: false
     #        type: string
     #      exposeAs:
     #        description: Type of service to expose as.
+    #        required: true
     #        type: array
     #        items:
     #          type: string
     #          enum: [ClusterIP, NodePort, LoadBalancer]
     #      nodePort:
     #        description: The port on each node on which this service is exposed when type is NodePort or LoadBalancer. Usually assigned by the system.
+    #        required: false
     #        type: integer
     #        minimum: 0
     #      port:
     #        description: The port number the service should expose.
+    #        required: true
     #        type: integer
     #        minimum: 0
     #      protocol:
     #        description: The protocol the service should expose.
+    #        required: true
     #        enum: [STCP, TCP, UDP]
     #        default: TCP
-    #    requiredProperties: [port, protocol, exposeAs]
+    #    requiredProperties: [exposeAs, port, protocol]
     # default: {}
     # @schema@
     # Ports that the service should expose.
     ports:
-      web:
-        port: 80
-        protocol: TCP
-        appProtocol: http
-        exposeAs:
-          - ClusterIP
-          - LoadBalancer
-      websecure:
-        port: 443
-        protocol: TCP
-        appProtocol: https
-        exposeAs:
-          - ClusterIP
-          - LoadBalancer
+      # WARN: traefik port on ClusterIP is required by Helm chart to test the
+      #       connectivity of Traefik and cannot be changed
       traefik:
+        appProtocol: http
+        exposeAs: [ClusterIP]
         port: 9000
         protocol: TCP
-        appProtocol: http
-        exposeAs:
-          - ClusterIP
-      metrics:
-        port: 9100
-        protocol: TCP
-        appProtocol: http
-        exposeAs:
-          - ClusterIP
 
     # @schema@
     # required: false
@@ -467,31 +450,28 @@ spec:
 
   # (--- A P P L I C A T I O N   C O N F I G U R A T I O N ---)
   # @schema@
-  # description: Traefik configuration. See https://doc.traefik.io/traefik/reference/static-configuration/file/ for more details.
   # $ref: https://json.schemastore.org/traefik-v3.json
+  # description: Traefik configuration. See https://doc.traefik.io/traefik/reference/static-configuration/file/ for more details.
   # required: false
   # default: {}
   # @schema@
   traefik:
-    api:
-      dashboard: true
-      insecure: true
     entryPoints:
-      web:
-        address: :8080
-      websecure:
-        address: :8443
-        http:
-          tls: {}
+      # WARN: traefik entrypoint is required by the liveness and readiness
+      #       probes and cannot be changed
       traefik:
         address: :9000
-      metrics:
-        address: :9100
     global:
       checkNewVersion: false
-      sendAnonymousUsage: false
     log:
       level: INFO
+    # WARN: traefik ping is required by the liveness and readiness probes and
+    #       cannot be changed
+    ping:
+      entryPoint: traefik
+    providers:
+      kubernetesCRD: {}
+
 
 # -----------------------------------------------------------------------------
 # Because `helm template` didn't have yet the `--skip-schema-validation` flag,

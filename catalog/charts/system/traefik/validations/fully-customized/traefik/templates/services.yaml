@@ -37,16 +37,6 @@ spec:
       targetPort: traefik
       protocol: TCP
       appProtocol: http
-    - name: web
-      port: 80
-      targetPort: web
-      protocol: TCP
-      appProtocol: http
-    - name: websecure
-      port: 443
-      targetPort: websecure
-      protocol: TCP
-      appProtocol: https
   externalTrafficPolicy: Cluster
   publishNotReadyAddresses: true
   sessionAffinity: ClientIP
@@ -87,16 +77,6 @@ spec:
       targetPort: http
       protocol: TCP
       appProtocol: http
-    - name: web
-      port: 80
-      targetPort: web
-      protocol: TCP
-      appProtocol: http
-    - name: websecure
-      port: 443
-      targetPort: websecure
-      protocol: TCP
-      appProtocol: https
   allocateLoadBalancerNodePorts: true
   externalTrafficPolicy: Local
   healthCheckNodePort: 30000

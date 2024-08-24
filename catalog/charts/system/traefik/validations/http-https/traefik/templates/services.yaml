@@ -1,0 +1,59 @@
+---
+# Source: traefik/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: 
+    {}
+  labels: 
+    app.kubernetes.io/instance: http-https
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: traefik-http-https
+    app.kubernetes.io/version: v3.1.2
+    helm.sh/chart: traefik-0.1.0
+  name: traefik-http-https
+  namespace: validations
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: http-https
+    app.kubernetes.io/version: "v3.1.2"
+    helm.sh/chart: traefik-0.1.0
+  ports:
+    - name: traefik
+      port: 9000
+      targetPort: traefik
+      protocol: TCP
+      appProtocol: http
+---
+# Source: traefik/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: 
+    {}
+  labels: 
+    app.kubernetes.io/instance: http-https
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: traefik-http-https
+    app.kubernetes.io/version: v3.1.2
+    helm.sh/chart: traefik-0.1.0
+  name: traefik-http-https-lb
+  namespace: validations
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/instance: http-https
+    app.kubernetes.io/version: "v3.1.2"
+    helm.sh/chart: traefik-0.1.0
+  ports:
+    - name: web
+      port: 80
+      targetPort: web
+      protocol: TCP
+      appProtocol: http
+    - name: websecure
+      port: 443
+      targetPort: websecure
+      protocol: TCP
+      appProtocol: https
