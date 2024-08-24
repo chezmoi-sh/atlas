@@ -15,7 +15,6 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: {{ include "release.name" . }}
-
   maxReplicas: {{ .Values.spec.autoscaling.maxReplicas }}
   minReplicas: {{ .Values.spec.autoscaling.minReplicas }}
   {{- with .Values.spec.autoscaling.behavior }}

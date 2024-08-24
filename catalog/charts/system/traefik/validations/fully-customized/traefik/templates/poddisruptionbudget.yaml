@@ -3,9 +3,9 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  annotations:
+  annotations: 
     custom.chezmoi.sh/everywhere: "true"
-  labels:
+  labels: 
     app.kubernetes.io/name: traefik-fully-customized
     app.kubernetes.io/instance: fully-customized
     app.kubernetes.io/version: "v3.1.2"
@@ -16,11 +16,9 @@ metadata:
   namespace: validations
 spec:
   selector:
-    matchLabels:
+    matchLabels: 
       app.kubernetes.io/instance: fully-customized
       app.kubernetes.io/version: "v3.1.2"
       helm.sh/chart: traefik-0.1.0
-
-
   minAvailable: 2
   unhealthyPodEvictionPolicy: AlwaysAllow

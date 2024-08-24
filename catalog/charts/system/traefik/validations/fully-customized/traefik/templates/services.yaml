@@ -87,8 +87,6 @@ spec:
       targetPort: http
       protocol: TCP
       appProtocol: http
-    
-    
     - name: web
       port: 80
       targetPort: web

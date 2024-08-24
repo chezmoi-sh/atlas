@@ -7,7 +7,7 @@ version: 0.1.0
 appVersion: v3.1.2
 kubeVersion: ">=1.30.0-0"
 home: https://traefik.io
-icon: ...
+icon: https://raw.githubusercontent.com/chezmoi-sh/atlas/wip/iron-age/catalog/charts/system/traefik/assets/traefik-proxy.svg
 keywords:
   - kubernetes
   - ingress

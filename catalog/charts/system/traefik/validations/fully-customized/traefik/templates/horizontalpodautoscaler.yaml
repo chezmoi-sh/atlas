@@ -19,7 +19,6 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: traefik-fully-customized
-
   maxReplicas: 10
   minReplicas: 5
   behavior: 

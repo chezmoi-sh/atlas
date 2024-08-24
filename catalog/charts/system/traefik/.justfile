@@ -71,9 +71,10 @@ validate_examples example:
 [doc('Dump some information about the Helm context')]
 [group('debug')]
 @dump_helm values="examples/default.yaml":
-    @: {{ if path_exists(values) == "false" { error("file " + values + " not found... aborted") } else {""} }}
+    : {{ if path_exists(values) == "false" { error("file " + values + " not found... aborted") } else {""} }}
+    # NOTE: using --show-only didn't display the YAML if there is a template error
     helm template debug . \
-        --show-only "templates/debug/dump.yaml" \
         --set helm_dump=true \
         --debug={{ env("DEBUG", "false") }} \
         --values {{ values }} \
+    | awk '/^# Source: traefik\/templates\/debug\/dump.yaml$/,/^\.\.\.$/'

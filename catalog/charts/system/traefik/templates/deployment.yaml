@@ -26,10 +26,10 @@ spec:
       automountServiceAccountToken: true
       containers:
       - name: traefik
-        args: {{- include "traefik.args" .Values.spec.traefik | nindent 10 }}
+        args: {{- include "traefik.args" .Values.spec.traefik | trim | nindent 10 }}
         image: {{ $template.spec.containers.traefik.image.repository }}:{{ $template.spec.containers.traefik.image.tag }}
         imagePullPolicy: {{ $template.spec.containers.traefik.image.pullPolicy }}
-        ports: {{- include "traefik.container.ports" .Values.spec.traefik | nindent 10 }}
+        ports: {{- include "traefik.container.ports" .Values.spec.traefik | trim | nindent 10 }}
         livenessProbe:
           httpGet:
             path: /ping

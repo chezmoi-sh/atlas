@@ -17,7 +17,7 @@ metadata:
 spec:
   type: ClusterIP
   selector: {{- include "release.labels.selector" $ | nindent 4 }}
-  ports: {{- $clusterIpPorts | nindent 4 }}
+  ports: {{- $clusterIpPorts | trim | nindent 4 }}
   {{- with .spec }}{{ toYaml . | nindent 2 }}{{- end -}}
 {{- end -}}
 {{- end -}}
@@ -37,7 +37,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector: {{- include "release.labels.selector" $ | nindent 4 }}
-  ports: {{- $loadBalancerPorts | nindent 4 }}
+  ports: {{- $loadBalancerPorts | trim | nindent 4 }}
   {{- with .spec }}{{ toYaml . | nindent 2 }}{{- end -}}
 {{- end -}}
 {{- end -}}
@@ -57,7 +57,7 @@ metadata:
 spec:
   type: NodePort
   selector: {{- include "release.labels.selector" $ | nindent 4 }}
-  ports: {{- $nodePortPorts | nindent 4 }}
+  ports: {{- $nodePortPorts | trim | nindent 4 }}
   {{- with .spec }}{{ toYaml . | nindent 2 }}{{- end -}}
 {{- end -}}
 {{- end -}}

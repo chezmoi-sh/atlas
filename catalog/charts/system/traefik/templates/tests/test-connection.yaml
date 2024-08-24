@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  {{- $annotations := mergeOverwrite (include "release.annotations" . | fromYaml) (dict "helm.sh/hook" "test") }}
+  annotations: {{ $annotations | toYaml | default "{}" | nindent 4 }}
+  labels: {{ include "release.labels" . | nindent 4 }}
+  name: {{ include "release.name" $ }}-test-connection
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "release.name" . }}:{{ .Values.spec.service.ports.traefik.port }}']
+  restartPolicy: Never
