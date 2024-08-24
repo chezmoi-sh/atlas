@@ -75,16 +75,20 @@
               pkgs.d2
               pkgs.devcontainer
               pkgs.docker-client
+              pkgs.fzf
               pkgs.gum
+              pkgs.go
               pkgs.kubernetes-helm
               pkgs.helm-docs
               pkgs.just
               pkgs.k3d
+              pkgs.k9s
               pkgs.kubectl
               pkgs.lefthook
               pkgs.nil
               pkgs.nix-output-monitor
               pkgs.nixfmt-rfc-style
+              pkgs.skopeo
               pkgs.trunk-io
               pkgs.yq-go
             ];

@@ -140,7 +140,9 @@
 				"trunk.io",
 				"visualstudioexptteam.vscodeintellicode",
 				"nefrob.vscode-just-syntax",
-				"ms-kubernetes-tools.vscode-kubernetes-tools"
+				"ms-kubernetes-tools.vscode-kubernetes-tools",
+				"golang.go",
+				"mortenson.go-template-transpiler-extension"
 			]
 		}
 	},
