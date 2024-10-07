@@ -21,6 +21,18 @@ diff environment="production":
 apply environment="production":
     KUBECTL_APPLYSET=true kubectl apply --kustomize 'clusters/{{environment}}' --prune --server-side --applyset=clusterapplysets.kubernetes.chezmoi.sh/nex.rpi --force-conflicts
 
+# -- Infrastructure (crossplane) related tasks
+[doc("Applies the infrastructure on nex·rpi Raspberry Pi")]
+[group('infrastructure')]
+apply_crossplane:
+    KUBECTL_APPLYSET=true kubectl apply --kustomize 'infrastructure/live/crossplane/production' --prune --server-side --applyset=clusterapplysets.kubernetes.chezmoi.sh/infrastructure --force-conflicts
+
+[doc("Shows the diff of the infrastructure on nex·rpi Raspberry Pi")]
+[group('infrastructure')]
+diff_crossplane:
+    KUBECTL_APPLYSET=true kubectl diff --kustomize 'infrastructure/live/crossplane/production' --prune --server-side | delta --side-by-side \
+    || true
+
 # -- Vault related tasks
 [doc("Generate all secret resources that will be stored in the Vault")]
 sync_vault:
@@ -32,8 +44,8 @@ sync_vault:
 dev: dev_up
     tilt up
 
-[private]
 [doc("Create the local development environment")]
+[group('development')]
 @dev_up:
     just {{ if env("DEVCONTAINER_NETWORK", "") != "" { "dev_k8s_in_devcontainer" } else { "dev_k8s_local" } }}
 

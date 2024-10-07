@@ -1,0 +1,33 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../base/sh.chezmoi/
+
+secretGenerator:
+  - name: aws-credentials
+    namespace: crossplane-chezmoish
+    files:
+      - configurations/aws-credentials.txt
+    options:
+      disableNameSuffixHash: true
+
+patches:
+  - patch: |-
+      apiVersion: aws.upbound.io/v1beta1
+      kind: ProviderConfig
+      metadata:
+        name: aws-chezmoish
+        namespace: crossplane-chezmoish
+      spec:
+        endpoint:
+          hostnameImmutable: true
+          services: [iam, s3, sts]
+          url:
+            static: http://localstack.localstack.svc.cluster.local.:4566
+            type: Static
+        skip_credentials_validation: true
+        skip_metadata_api_check: true
+        skip_requesting_account_id: true
+        s3_use_path_style: true

@@ -1,0 +1,99 @@
+---
+apiVersion: ses.aws.upbound.io/v1beta1
+kind: DomainDKIM
+metadata:
+  annotations:
+    crossplane.io/external-name: chezmoi.sh
+  name: chezmoi.sh
+spec:
+  forProvider:
+    region: eu-west-3
+---
+# TODO: use .status.atProvider.dkimTokens to populate the DNS records (3 CNAME) for the record _amazonses.chezmoi.sh
+---
+apiVersion: ses.aws.upbound.io/v1beta1
+kind: DomainMailFrom
+metadata:
+  annotations:
+    crossplane.io/external-name: chezmoi.sh
+  name: chezmoi.sh-domain-mail-from
+spec:
+  forProvider:
+    domain: chezmoi.sh
+    mailFromDomain: ses.chezmoi.sh
+    region: eu-west-3
+  writeConnectionSecretToRef:
+    name: chezmoi.sh-domain-mail-from
+    namespace: crossplane-nxchezmoish
+---
+# TODO: use `MX ses.chezmoi.sh 10 feedback-smtp.eu-west-3.amazonses.com` and `TXT ses.chezmoi.sh "v=spf1 include:amazonses.com ~all"` to update the DNS records for the domain chezmoi.sh
+---
+# TODO: use `TXT _dmarc.chezmoi.sh "v=DMARC1; p=none;"` to configure DMARC for the domain chezmoi.sh
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Policy
+metadata:
+  annotations:
+    crossplane.io/external-name: AWSSESTransactionMailer
+  name: chezmoi.sh-ses-policy
+spec:
+  forProvider:
+    path: /nx.chezmoi.sh/
+    policy: |
+      {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Effect": "Allow",
+                  "Action": [
+                      "ses:SendEmail",
+                      "ses:SendRawEmail"
+                  ],
+                  "Resource": [
+                      "noreply@chezmoi.sh",
+                  ]
+              }
+          ],
+          "Condition": {
+              "StringEquals": {
+                  "ses:FromAddress": "noreply@chezmoi.sh"
+              }
+          }
+      }
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: User
+metadata:
+  annotations:
+    crossplane.io/external-name: AWSSESTransactionMailer
+  name: chezmoi.sh-ses-user
+spec:
+  forProvider:
+    path: /nx.chezmoi.sh/
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: AccessKey
+metadata:
+  annotations:
+    crossplane.io/external-name: AWSSESTransactionMailer
+  name: chezmoi.sh-ses-access-key
+spec:
+  forProvider:
+    userRef:
+      name: chezmoi.sh-ses-user
+  writeConnectionSecretToRef:
+    name: chezmoi.sh-ses-access-key
+    namespace: crossplane-nxchezmoish
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: UserPolicyAttachment
+metadata:
+  annotations:
+    crossplane.io/external-name: AWSSESTransactionMailer
+  name: chezmoi.sh-ses-user-policy-attachment
+spec:
+  forProvider:
+    policyArnRef:
+      name: chezmoi.sh-ses-policy
+    userRef:
+      name: chezmoi.sh-ses-user

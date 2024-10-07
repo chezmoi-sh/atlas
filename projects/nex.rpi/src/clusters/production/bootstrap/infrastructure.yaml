@@ -1,0 +1,10 @@
+---
+apiVersion: kubernetes.chezmoi.sh/v1alpha1
+kind: ClusterApplySet
+metadata:
+  annotations:
+    applyset.kubernetes.io/tooling: kubectl/v1.31
+    applyset.kubernetes.io/contains-group-kinds: ''
+  labels:
+    applyset.kubernetes.io/id: applyset-PVtlL1OvYXRZGboLYacm6XJR4qrsQzo0mGyHlVR8vD8-v1
+  name: infrastructure

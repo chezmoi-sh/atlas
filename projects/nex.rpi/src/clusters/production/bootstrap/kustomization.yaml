@@ -9,3 +9,4 @@ resources:
   # ClusterApplySet required for the nex·rpi project
   - nex.rpi.yaml # main ClusterApplySet
   - kubevault.yaml # kubevault dedicated ClusterApplySet
+  - infrastructure.yaml # infrastructure dedicated ClusterApplySet
