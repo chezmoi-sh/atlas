@@ -1,0 +1,83 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xtenants.aws.chezmoi.sh
+spec:
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                enabledRegions:
+                  type: array
+                  description: >
+                    Specifies the AWS regions where this tenant is allowed to create resources.
+                    Defaults to `eu-west-3` if not specified.
+                  items:
+                    type: string
+                  default:
+                    - eu-west-3
+                  example:
+                    - us-west-2
+                    - eu-central-1
+                enabledServices:
+                  type: array
+                  description: >
+                    Specifies the AWS services that this tenant can use to create resources.
+                    Must contain at least one service.
+                  items:
+                    type: string
+                  example:
+                    - ec2
+                    - s3
+                  minItems: 1
+                  not:
+                    items:
+                      enum:
+                        - iam
+                        - organizations
+                        - sts
+                names:
+                  type: object
+                  description: >
+                    Specifies the name used to label AWS resources created by the tenant.
+                    Consists of a full name and a slug identifier.
+                  properties:
+                    full:
+                      type: string
+                      description: >
+                        Full name of the tenant. Only alphanumeric characters, hyphens,
+                        underscores, and periods are allowed.
+                      pattern: ^[a-zA-Z][a-zA-Z0-9._-]*$
+                    slug:
+                      type: string
+                      description: >
+                        A short, URL-friendly identifier for the tenant.
+                        Only alphanumeric characters are allowed.
+                      pattern: ^[a-zA-Z0-9]+$
+                  required:
+                    - full
+                    - slug
+                providerConfigRef:
+                  type: object
+                  description: >
+                    Reference to the configuration that specifies the AWS provider to use
+                    for managing resources.
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the referenced provider configuration.
+                  required:
+                    - name
+                  default:
+                    name: default
+              required:
+                - enabledServices
+                - names

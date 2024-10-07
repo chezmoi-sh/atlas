@@ -1,0 +1,30 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xtenants.aws.chezmoi.sh
+spec:
+  claimNames:
+    categories:
+      - crossplane
+      - chezmoi-sh
+    kind: Tenant
+    listKind: TenantList
+    plural: tenants
+    singular: tenant
+  connectionSecretKeys:
+    - access_key_id
+    - secret_access_key
+  defaultCompositeDeletePolicy: Foreground
+  defaultCompositionRef:
+    name: xtenants.aws.chezmoi.sh
+  group: aws.chezmoi.sh
+  names:
+    categories:
+      - crossplane
+      - chezmoi-sh
+    kind: XTenant
+    listKind: XTenantList
+    plural: xtenants
+    singular: xtenant
+  versions: []

@@ -1,0 +1,355 @@
+# trunk-ignore-all(checkov/CKV_SECRET_6): No secrets are stored in this file
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xtenants.aws.chezmoi.sh
+spec:
+  compositeTypeRef:
+    apiVersion: aws.chezmoi.sh/v1alpha1
+    kind: XTenant
+  mode: Pipeline
+  pipeline:
+    # Create the IAM user used to create and manage resources in the AWS tenant.
+    - step: create-iam-user
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{ $xr := getCompositeResource . }}
+            ---
+            apiVersion: iam.aws.upbound.io/v1beta1
+            kind: User
+            metadata:
+              annotations:
+                crossplane.io/external-name: {{ regexReplaceAll "[^a-zA-Z0-9]" $xr.spec.names.full "_" | camelcase }}TenantUser
+                gotemplating.fn.crossplane.io/composition-resource-name: TenantUser
+              labels:
+                aws.chezmoi.sh/tenant: {{ $xr.spec.names.slug }}
+              name: tenant-{{ $xr.spec.names.full }}
+            spec:
+              forProvider:
+                path: /{{ $xr.spec.names.full }}/
+                permissionsBoundary: {{ (index $.observed.resources "TenantBoundaries").resource.status.atProvider.arn }}
+                tags:
+                  TenantName: {{ $xr.spec.names.full }}
+              providerConfigRef:
+                name: {{ $xr.spec.providerConfigRef.name }}
+
+    # Create the IAM access key used to authenticate with the AWS API.
+    - step: create-iam-access-key
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{ $xr := getCompositeResource . }}
+            ---
+            apiVersion: iam.aws.upbound.io/v1beta1
+            kind: AccessKey
+            metadata:
+              annotations:
+                gotemplating.fn.crossplane.io/composition-resource-name: TenantUserAccessKey
+              labels:
+                aws.chezmoi.sh/tenant: {{ $xr.spec.names.slug }}
+              name: tenant-{{ $xr.spec.names.full }}-access-key
+            spec:
+              forProvider:
+                userRef:
+                  name: tenant-{{ $xr.spec.names.full }}
+              providerConfigRef:
+                name: {{ $xr.spec.providerConfigRef.name }}
+              writeConnectionSecretToRef:
+                namespace: crossplane-system
+                name: {{ printf "tenant-%s-aws-credentials" $xr.spec.names.full | sha1sum }}
+            ---
+            apiVersion: meta.gotemplating.fn.crossplane.io/v1alpha1
+            kind: CompositeConnectionDetails
+            {{ if eq $.observed.resources nil }}
+            data: {}
+            {{ else }}
+            data:
+              access_key_id: {{ (index $.observed.resources "TenantUserAccessKey").connectionDetails.username }}
+              secret_access_key: {{ (index $.observed.resources "TenantUserAccessKey").connectionDetails.password }}
+            {{ end }}
+
+    # Create all the IAM policies required to limit the root tenant user to:
+    #   - only create resources for the enabled services and regions
+    #   - manage its own resources
+    #   - create sub-tenant users
+    # Create the IAM policy that limits the root tenant user to only create resources for the enabled services and regions.
+
+    # Create the IAM policy that limits the root tenant user to only create resources for the enabled services and regions.
+    - step: create-iam-policy-tenant-boundaries
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{ $xr := getCompositeResource . }}
+            ---
+            apiVersion: iam.aws.upbound.io/v1beta1
+            kind: Policy
+            metadata:
+              annotations:
+                crossplane.io/external-name: {{ regexReplaceAll "[^a-zA-Z0-9]" $xr.spec.names.full "_" | camelcase }}TenantBoundaries
+                gotemplating.fn.crossplane.io/composition-resource-name: TenantBoundaries
+              labels:
+                aws.chezmoi.sh/tenant: {{ $xr.spec.names.slug }}
+                aws.chezmoi.sh/policy: boundaries
+              name: tenant-{{ $xr.spec.names.full }}-boundaries
+            spec:
+              forProvider:
+                description: This policy allows the root tenant user to create and manage resources in the AWS account (allows {{ join ", " $xr.spec.enabledServices }} on {{ join ", " $xr.spec.enabledRegions }}).
+                path: /{{ $xr.spec.names.full }}/
+                policy: |-
+                  {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Sid": "AllowCreateResources",
+                        "Effect": "Allow",
+                        "Action": [
+                        {{- range $i, $service := $xr.spec.enabledServices }}
+                          "{{ $service }}:Create*"{{ if ne $i (sub (len $xr.spec.enabledServices) 1) }},{{ end }}
+                        {{- end }}
+                        ],
+                        "Resource": "*",
+                        "Condition": {
+                          "StringEquals": {
+                            "aws:PrincipalTag/TenantName": "{{ $xr.spec.names.full }}",
+                            "aws:RequestTag/TenantName": "{{ $xr.spec.names.full }}"
+                          },
+                          "ForAnyValue:StringLike": {
+                            "aws:RequestedRegion": [
+                            {{- range $i, $region := $xr.spec.enabledRegions }}
+                              "{{ $region }}"{{ if ne $i (sub (len $xr.spec.enabledRegions) 1) }},{{ end }}
+                            {{- end }}
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "Sid": "AllowTenantResources",
+                        "Effect": "Allow",
+                        "Action": "*",
+                        "Resource": "*",
+                        "Condition": {
+                          "StringEquals": {
+                            "aws:PrincipalTag/TenantName": "{{ $xr.spec.names.full }}",
+                            "aws:RequestTag/TenantName": "{{ $xr.spec.names.full }}"
+                          }
+                        }
+                      }
+                    ]
+                  }
+              providerConfigRef:
+                name: {{ $xr.spec.providerConfigRef.name }}
+
+    # Create the IAM policy that allows the root tenant user to create sub-tenant users, with
+    # boundaries that prevent them from creating resources outside of their own tenant.
+    - step: allow-iam-policy-create-sub-tenant-users
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{ $xr := getCompositeResource . }}
+            ---
+            apiVersion: iam.aws.upbound.io/v1beta1
+            kind: Policy
+            metadata:
+              annotations:
+                crossplane.io/external-name: {{ regexReplaceAll "[^a-zA-Z0-9]" $xr.spec.names.full "_" | camelcase }}TenantPolicyCreateSubTenantUsers
+                gotemplating.fn.crossplane.io/composition-resource-name: TenantPolicyCreateSubTenantUsers
+              labels:
+                aws.chezmoi.sh/tenant: {{ $xr.spec.names.slug }}
+                aws.chezmoi.sh/policy: create-sub-tenant-users
+              name: tenant-{{ $xr.spec.names.full }}-policy-create-sub-tenant-users
+            spec:
+              forProvider:
+                description: |-
+                  This policy allows the root tenant user to create sub-tenant users in the AWS account.
+                path: /{{ $xr.spec.names.full }}/
+                policy: |-
+                  {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                          {
+                              "Sid": "CreateOrChangeOnlyWithBoundary",
+                              "Effect": "Allow",
+                              "Action": [
+                                  "iam:AttachUserPolicy",
+                                  "iam:CreateUser",
+                                  "iam:DeleteUserPolicy",
+                                  "iam:DetachUserPolicy",
+                                  "iam:PutUserPermissionsBoundary",
+                                  "iam:PutUserPolicy"
+                              ],
+                              "Resource": "*",
+                              "Condition": {
+                                "StringEquals": {
+                                  "iam:PermissionsBoundary": "arn:aws:iam::123456789012:policy/{{ $xr.spec.names.full }}/TenantBoundaries"
+                                  }
+                              }
+                          },
+                          {
+                              "Sid": "CloudWatchAndOtherIAMTasks",
+                              "Effect": "Allow",
+                              "Action": [
+                                "cloudwatch:*",
+                                "iam:CreateAccessKey",
+                                "iam:CreateGroup",
+                                "iam:CreateLoginProfile",
+                                "iam:CreatePolicy",
+                                "iam:DeleteGroup",
+                                "iam:DeletePolicy",
+                                "iam:DeletePolicyVersion",
+                                "iam:DeleteUser",
+                                "iam:GetAccountPasswordPolicy",
+                                "iam:GetGroup",
+                                "iam:GetLoginProfile",
+                                "iam:GetPolicy",
+                                "iam:GetPolicyVersion",
+                                "iam:GetRolePolicy",
+                                "iam:GetUser",
+                                "iam:GetUserPolicy",
+                                "iam:ListAccessKeys",
+                                "iam:ListAttachedRolePolicies",
+                                "iam:ListAttachedUserPolicies",
+                                "iam:ListEntitiesForPolicy",
+                                "iam:ListGroups",
+                                "iam:ListGroupsForUser",
+                                "iam:ListMFADevices",
+                                "iam:ListPolicies",
+                                "iam:ListPolicyVersions",
+                                "iam:ListRolePolicies",
+                                "iam:ListSSHPublicKeys",
+                                "iam:ListServiceSpecificCredentials",
+                                "iam:ListSigningCertificates",
+                                "iam:ListUserPolicies",
+                                "iam:ListUsers",
+                                "iam:SetDefaultPolicyVersion",
+                                "iam:SimulateCustomPolicy",
+                                "iam:SimulatePrincipalPolicy",
+                                "iam:UpdateGroup",
+                                "iam:UpdateLoginProfile",
+                                "iam:UpdateUser"
+                              ],
+                              "NotResource": "arn:aws:iam::123456789012:user/{{ $xr.spec.names.full }}/TenantUser"
+                          },
+                          {
+                              "Sid": "NoBoundaryPolicyEdit",
+                              "Effect": "Deny",
+                              "Action": [
+                                  "iam:CreatePolicyVersion",
+                                  "iam:DeletePolicy",
+                                  "iam:DeletePolicyVersion",
+                                  "iam:SetDefaultPolicyVersion"
+                              ],
+                              "Resource": [
+                                  "arn:aws:iam::123456789012:policy/{{ $xr.spec.names.full }}/TenantBoundaries",
+                                  "arn:aws:iam::123456789012:policy/{{ $xr.spec.names.full }}/TenantPolicyCreateSubTenantUsers"
+                              ]
+                          },
+                          {
+                              "Sid": "NoBoundaryUserDelete",
+                              "Effect": "Deny",
+                              "Action": "iam:DeleteUserPermissionsBoundary",
+                              "Resource": "*"
+                          },
+                          {
+                              "Sid": "DenyAllOusideTenant",
+                              "Effect": "Deny",
+                              "Action": "iam:*",
+                              "NotResource": [
+                                  "arn:aws:iam::123456789012:user/{{ $xr.spec.names.full }}/*",
+                                  "arn:aws:iam::123456789012:policy/{{ $xr.spec.names.full }}/*"
+                              ]
+                          }
+                      ]
+                  }
+              providerConfigRef:
+                name: {{ $xr.spec.providerConfigRef.name }}
+
+    # Attach the IAM policies to the tenant user.
+    - step: attach-iam-policy-tenant-boundaries
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{ $xr := getCompositeResource . }}
+            ---
+            apiVersion: iam.aws.upbound.io/v1beta1
+            kind: UserPolicyAttachment
+            metadata:
+              annotations:
+                gotemplating.fn.crossplane.io/composition-resource-name: TenantUserAttachPolicy
+              name: tenant-{{ $xr.spec.names.full }}-attach-policy-tenant-boundaries
+            spec:
+              forProvider:
+                policyArnSelector:
+                  matchLabels:
+                    aws.chezmoi.sh/tenant: {{ $xr.spec.names.slug }}
+                    aws.chezmoi.sh/policy: boundaries
+                userRef:
+                  name: tenant-{{ $xr.spec.names.full }}
+              providerConfigRef:
+                name: {{ $xr.spec.providerConfigRef.name }}
+                policy:
+                  resolution: Required
+                  resolve: IfNotPresent
+    - step: attach-iam-policy-create-sub-tenant-users
+      functionRef:
+        name: function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{ $xr := getCompositeResource . }}
+            ---
+            apiVersion: iam.aws.upbound.io/v1beta1
+            kind: UserPolicyAttachment
+            metadata:
+              annotations:
+                gotemplating.fn.crossplane.io/composition-resource-name: TenantUserAttachPolicyCreateSubTenantUsers
+              name: tenant-{{ $xr.spec.names.full }}-attach-policy-create-sub-tenant-users
+            spec:
+              forProvider:
+                policyArnSelector:
+                  matchLabels:
+                    aws.chezmoi.sh/tenant: {{ $xr.spec.names.slug }}
+                    aws.chezmoi.sh/policy: create-sub-tenant-users
+                userRef:
+                  name: tenant-{{ $xr.spec.names.full }}
+              providerConfigRef:
+                name: {{ $xr.spec.providerConfigRef.name }}
+                policy:
+                  resolution: Required
+                  resolve: IfNotPresent
+
+    # Wait for the IAM resources to be ready.
+    - step: wait-all-ready
+      functionRef:
+        name: function-auto-ready
+
+  writeConnectionSecretsToNamespace: crossplane-system
