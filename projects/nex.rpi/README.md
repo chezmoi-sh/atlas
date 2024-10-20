@@ -48,7 +48,7 @@ without[^1] the need of third-party services.
 
 ### 🔐 Authentication and Authorization
 
-* **SSO** \_based on [Authelia](https://www.authelia.com/) and [yaLDAP](https://github.com/chezmoi-sh/yaldap/tree/main)\_\_:
+* **SSO** *based on [Authelia](https://www.authelia.com/) and [yaLDAP](https://github.com/chezmoi-sh/yaldap/tree/main)*:
   Centralized authentication with 2FA, SSO and LDAP support for all services.
 
   **Why is it mission-critical?** It provides a centralized authentication system that can be used by other services
@@ -72,6 +72,8 @@ without[^1] the need of third-party services.
   **Why is it mission-critical?** It ensures that all secrets are stored securely and can be accessed by services that
   need them with the right ACLs.
 
+  ***NOTE**: This service is hosted on this project but is managed by the [chezmoi.sh](../chezmoi.sh/README.md) project.*
+
 ### 📦 Others
 
 * **Home dashboard** *based on [glance](https://github.com/glanceapp/glance)*: Provides a page with all services and their
@@ -85,6 +87,8 @@ without[^1] the need of third-party services.
 
   **Why is it mission-critical?** It ensures that all external services are managed using the same tools and processes,
   and can be easily audited.
+
+  ***NOTE**: This service is hosted on this project but is managed by the [chezmoi.sh](../chezmoi.sh/README.md) project.*
 
 ## 🚀 How to use / How to develop on it
 
@@ -103,10 +107,11 @@ In case of a disaster, the following steps should be taken:
 * \[X] **Step 0**: Think of what this project should host.
   * \[X] List all services that should be deployed on this project.
   * \[X] Create a diagram of the architecture.
-* \[ ] **Step 1**: Install all services on the Raspberry Pi in a "dirty" way.
-  * \[ ] Configure the Raspberry Pi by hand (no automation).
-  * \[ ] Install and configure the k3s cluster.
-  * \[ ] Install and configure all services using only raw Kubernetes manifests.
+* \[X] **Step 1**: Install all services on the Raspberry Pi in a "dirty" way.
+  * \[X] Configure the Raspberry Pi by hand (no automation).
+  * \[X] Install and configure the k3s cluster.
+  * \[ ] ~~Install and configure all services using only raw Kubernetes manifests~~.
+  * \[ ] Install and configure all services using raw Kubernetes manifests or public Helm Charts.
 * \[ ] **Step 2**: Improve quality and security.
   * \[ ] Configure k3s to use the ZOT registry as mirror/proxy for all images[^2].
   * \[ ] Make my own images for all services.
