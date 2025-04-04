@@ -1,0 +1,29 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  annotations:
+    argocd.argoproj.io/description: |
+      This ApplicationSet is responsible for automatically deploying all
+      system applications and configurations inside the targeted cluster,
+      depending on existing templates and cluster definitions.
+  name: system
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://github.com/chezmoi-sh/atlas.git
+        revision: refact/use-one-app-by-cluster
+        directories: []
+  template:
+    metadata:
+      name: system
+    spec:
+      project: system
+      sources:
+        - repoURL: https://github.com/chezmoi-sh/atlas.git
+          path: "{{ .path.path }}"
+          targetRevision: refact/use-one-app-by-cluster
+      destination:
+        namespace: kube-system

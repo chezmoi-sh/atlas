@@ -11,7 +11,7 @@ spec:
   sources:
     - path: projects/nx/src/apps/*argocd-system
       repoURL: https://github.com/chezmoi-sh/atlas.git
-      targetRevision: main
+      targetRevision: refact/use-one-app-by-cluster
     - path: deploy/manifests/default
       repoURL: https://github.com/chezmoi-sh/argotails.git
       targetRevision: v0.1.4

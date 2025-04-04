@@ -12,6 +12,7 @@ resources:
 
   # Manage all ArgoCD ApplicationSets through an Application
   - "*argocd.applicationset.application.yaml"
+  - "*seed.applicationset.yaml"
 
 helmCharts:
   - name: argo-cd
@@ -22,3 +23,4 @@ helmCharts:
     additionalValuesFiles:
       - argocd.helm-values/extensions.yaml
       - argocd.helm-values/security-compliance.yaml
+      - argocd.helm-values/tailscale-sidecar.yaml

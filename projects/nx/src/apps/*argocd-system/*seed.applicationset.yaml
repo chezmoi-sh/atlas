@@ -1,0 +1,61 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  annotations:
+    argocd.argoproj.io/description: |
+      This ApplicationSet is responsible for automatically deploying all
+      configurations across all clusters configured in ArgoCD. It achieves this
+      by deploying an application that, in turn, deploys two other ApplicationSets:
+      one for system/cluster applications and another for applications.
+  name: seed
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - clusters: {}
+  template:
+    metadata:
+      name: "{{ .name }}"
+    spec:
+      project: seed
+      sources:
+        - repoURL: https://github.com/chezmoi-sh/atlas.git
+          path: templates/seed.applicationsets/
+          targetRevision: refact/use-one-app-by-cluster
+
+          kustomize:
+            patches:
+              - patch: |
+                  - op: add
+                    path: /spec/generators/0/git/directories/-
+                    value:
+                      path: projects/{{ index .metadata.annotations "device.tailscale.com/hostname" | default .name }}/src/infrastructure/kubernetes/*
+                  - op: add
+                    path: /spec/generators/0/git/directories/-
+                    value:
+                      path: projects/{{ index .metadata.annotations "device.tailscale.com/hostname" | default .name }}/src/infrastructure/kubernetes/[*]*
+                      exclude: true
+                target:
+                  name: system
+                  kind: ApplicationSet
+              - patch: |
+                  - op: add
+                    path: /spec/generators/0/git/directories/-
+                    value:
+                      path: projects/{{ index .metadata.annotations "device.tailscale.com/hostname" | default .name }}/src/apps/*
+                  - op: add
+                    path: /spec/generators/0/git/directories/-
+                    value:
+                      path: projects/{{ index .metadata.annotations "device.tailscale.com/hostname" | default .name }}/src/apps/[*]*
+                      exclude: true
+                target:
+                  name: applications
+                  kind: ApplicationSet
+
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+          - Delete=confirm
+          - Prune=confirm
+          - ServerSideApply=true

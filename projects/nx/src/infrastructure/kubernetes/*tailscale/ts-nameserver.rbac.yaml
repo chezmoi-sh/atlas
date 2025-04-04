@@ -1,0 +1,36 @@
+# trunk-ignore-all(checkov/CKV_K8S_21): the namespace is managed by Kustomize.
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tailscale:nameserver
+rules:
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "create", "patch"]
+  # trunk-ignore(trivy/KSV113): Tailscale requires the ability to manage its own secrets.
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create"]
+  # trunk-ignore(trivy/KSV113): Tailscale requires the ability to manage its own secrets.
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "update", "delete"]
+    resourceNames: ["ts-nameserver-0"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tailscale:nameserver
+subjects:
+  - kind: ServiceAccount
+    name: ts-nameserver
+roleRef:
+  kind: Role
+  name: tailscale:nameserver
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ts-nameserver
