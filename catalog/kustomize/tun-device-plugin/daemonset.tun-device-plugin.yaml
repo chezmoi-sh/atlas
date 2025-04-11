@@ -68,10 +68,10 @@ spec:
               mountPath: /dev
       priorityClassName: system-node-critical
       tolerations:
-        - operator: "Exists"
-          effect: "NoExecute"
-        - operator: "Exists"
-          effect: "NoSchedule"
+        - operator: Exists
+          effect: NoExecute
+        - operator: Exists
+          effect: NoSchedule
       volumes:
         - name: device-plugin
           hostPath:
