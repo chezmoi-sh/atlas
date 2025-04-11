@@ -1,0 +1,33 @@
+---
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+  - ../../../../../../catalog/kustomize/tun-device-plugin
+
+patches:
+  - path: restricted.proxyclass.yaml
+
+# labels:
+#   - pairs:
+#       app.kubernetes.io/name: tailscale-test
+#     includeTemplates: true
+#     includeSelectors: true
+#   - pairs:
+#       app.kubernetes.io/part-of: tailscale-test
+#     includeTemplates: true
+
+# resources:
+#   - coredns-addons.configmap.yaml
+
+#   - ../../../../../../catalog/kustomize/tailscale/plugins/tun-device-plugin
+
+# transformers:
+#   - |-
+#     apiVersion: builtin
+#     kind: NamespaceTransformer
+#     metadata:
+#       name: tailscale-system
+#       namespace: tailscale-system
+#     setRoleBindingSubjects: allServiceAccounts
+#     unsetOnly: true
