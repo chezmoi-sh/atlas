@@ -31,6 +31,10 @@ secret:
     authelia-oidc: {}
     authelia-smtp: {}
 
+persistence:
+  enabled: true
+  size: 100Mi
+
 redis:
   master:
     replica:
