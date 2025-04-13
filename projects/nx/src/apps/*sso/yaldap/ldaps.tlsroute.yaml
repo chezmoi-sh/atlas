@@ -2,6 +2,8 @@
 apiVersion: gateway.networking.k8s.io/v1alpha2
 kind: TLSRoute
 metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/include-unifi: "true"
   name: ldaps-tlsroute
 spec:
   parentRefs:
