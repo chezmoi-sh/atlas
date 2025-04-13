@@ -3,15 +3,6 @@ pod:
   kind: Deployment
   replicas: 1
 
-  extraVolumes:
-    - name: authelia-varlib
-      emptyDir:
-        medium: Memory
-        sizeLimit: 50Mi
-  extraVolumeMounts:
-    - name: authelia-varlib
-      mountPath: /var/lib/authelia
-
 configMap:
   existingConfigMap: authelia-configuration
   session:
