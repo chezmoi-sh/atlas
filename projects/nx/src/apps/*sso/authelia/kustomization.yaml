@@ -29,3 +29,12 @@ configMapGenerator:
   - name: authelia-configuration
     files:
       - configuration.yaml=configurations/authelia.yaml
+
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/volumeMounts/0/mountPath
+        value: /var/lib/authelia
+    target:
+      kind: Deployment
+      name: authelia
