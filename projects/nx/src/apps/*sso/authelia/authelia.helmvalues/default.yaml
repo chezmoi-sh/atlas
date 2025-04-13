@@ -25,6 +25,7 @@ configMap:
         disabled: true
 
 secret:
+  existingSecret: authelia
   mountPath: /var/run/secrets/authelia.com
   additionalSecrets:
     authelia-ldap: {}
