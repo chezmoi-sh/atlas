@@ -975,7 +975,8 @@ storage:
   ##
   local:
     ## Path to the SQLite3 Database.
-    path: /var/lib/authelia/db.sqlite3
+    # path: /var/lib/authelia/db.sqlite3
+    path: /config/authelia/db.sqlite3
 
   ##
   ## MySQL / MariaDB (Storage Provider)
