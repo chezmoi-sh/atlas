@@ -1,3 +1,4 @@
+# trunk-ignore-all(prettier): This file contains template and is difficult to format for prettier
 ---
 # yaml-language-server: $schema=https://www.authelia.com/schemas/latest/json-schema/configuration.json
 
@@ -464,19 +465,10 @@ authentication_backend:
     # permit_referrals: false
 
     ## The username and password of the admin user.
-    user:
-      {
-        {
-          secret "/var/run/secrets/authelia.com/authelia-ldap/authentication.backend.ldap.user",
-        },
-      }
+    user: "{{ secret "/var/run/secrets/authelia.com/authelia-ldap/authentication.backend.ldap.user" }}"
+
     ## Password can also be set using a secret: https://www.authelia.com/c/secrets
-    password:
-      {
-        {
-          secret "/var/run/secrets/authelia.com/authelia-ldap/authentication.backend.ldap.password",
-        },
-      }
+    password: "{{ secret "/var/run/secrets/authelia.com/authelia-ldap/authentication.backend.ldap.password" }}"
 
     ## The attributes for users and objects from the directory server.
     attributes:
@@ -1143,21 +1135,11 @@ notifier:
     # timeout: '5 seconds'
 
     ## The username used for SMTP authentication.
-    username:
-      {
-        {
-          secret "/var/run/secrets/authelia.com/authelia-smtp/notifier.smtp.username",
-        },
-      }
+    username: "{{ secret "/var/run/secrets/authelia.com/authelia-smtp/notifier.smtp.username" }}"
 
     ## The password used for SMTP authentication.
     ## Can also be set using a secret: https://www.authelia.com/c/secrets
-    password:
-      {
-        {
-          secret "/var/run/secrets/authelia.com/authelia-smtp/notifier.smtp.password",
-        },
-      }
+    password: "{{ secret "/var/run/secrets/authelia.com/authelia-smtp/notifier.smtp.password" }}"
 
     ## The sender is used to is used for the MAIL FROM command and the FROM header.
     ## If this is not defined and the username is an email, we use the username as this value. This can either be just
@@ -1228,12 +1210,7 @@ identity_providers:
   oidc:
     ## The hmac_secret is used to sign OAuth2 tokens (authorization code, access tokens and refresh tokens).
     ## HMAC Secret can also be set using a secret: https://www.authelia.com/c/secrets
-    hmac_secret:
-      {
-        {
-          secret "/var/run/secrets/authelia.com/authelia-oidc/identity.providers.oidc.hmac.secret",
-        },
-      }
+    hmac_secret: "{{ secret "/var/run/secrets/authelia.com/authelia-oidc/identity.providers.oidc.hmac.secret" }}"
 
     ## The JWK's issuer option configures multiple JSON Web Keys. It's required that at least one of the JWK's
     ## configured has the RS256 algorithm. For RSA keys (RS or PS) the minimum is a 2048 bit key.
@@ -1342,41 +1319,21 @@ identity_providers:
 
     ## Clients is a list of known clients and their configuration.
     clients:
-      - {
-          {
-            secret "/var/run/secrets/authelia.com/authelia-oidc/oidc.client.argocd" | nindent 8,
-          },
-        }
-      - {
-          {
-            secret "/var/run/secrets/authelia.com/authelia-oidc/oidc.client.argocd_cli" | nindent 8,
-          },
-        }
-      - {
-          {
-            secret "/var/run/secrets/authelia.com/authelia-oidc/oidc.client.budibase" | nindent 8,
-          },
-        }
-      - {
-          {
-            secret "/var/run/secrets/authelia.com/authelia-oidc/oidc.client.linkding" | nindent 8,
-          },
-        }
-      - {
-          {
-            secret "/var/run/secrets/authelia.com/authelia-oidc/oidc.client.mealie" | nindent 8,
-          },
-        }
-      - {
-          {
-            secret "/var/run/secrets/authelia.com/authelia-oidc/oidc.client.paperless_ngx" | nindent 8,
-          },
-        }
-      - {
-          {
-            secret "/var/run/secrets/authelia.com/authelia-oidc/oidc.client.proxmox" | nindent 8,
-          },
-        }
+      - |
+        {{ secret "/var/run/secrets/authelia.com/authelia-oidc/oidc.client.argocd" | nindent 8 }}
+      - |
+        {{ secret "/var/run/secrets/authelia.com/authelia-oidc/oidc.client.argocd_cli" | nindent 8 }}
+      - |
+        {{ secret "/var/run/secrets/authelia.com/authelia-oidc/oidc.client.budibase" | nindent 8 }}
+      - |
+        {{ secret "/var/run/secrets/authelia.com/authelia-oidc/oidc.client.linkding" | nindent 8 }}
+      - |
+        {{ secret "/var/run/secrets/authelia.com/authelia-oidc/oidc.client.mealie" | nindent 8 }}
+      - |
+        {{ secret "/var/run/secrets/authelia.com/authelia-oidc/oidc.client.paperless_ngx" | nindent 8 }}
+      - |
+        {{ secret "/var/run/secrets/authelia.com/authelia-oidc/oidc.client.proxmox" | nindent 8 }}
+      
       # -
       ## The Client ID is the OAuth 2.0 and OpenID Connect 1.0 Client ID which is used to link an application to a
       ## configuration.
