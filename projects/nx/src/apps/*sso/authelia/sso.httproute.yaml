@@ -18,3 +18,8 @@ spec:
           kind: Service
           name: authelia
           port: 80
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
