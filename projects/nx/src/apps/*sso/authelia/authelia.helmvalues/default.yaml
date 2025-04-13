@@ -1,0 +1,41 @@
+---
+pod:
+  kind: Deployment
+  replicas: 1
+
+  extraVolumes:
+    - name: authelia-varlib
+      emptyDir:
+        medium: Memory
+        sizeLimit: 50Mi
+  extraVolumeMounts:
+    - name: authelia-varlib
+      mountPath: /var/lib/authelia
+
+configMap:
+  existingConfigMap: authelia-configuration
+  session:
+    redis:
+      deploy: true
+
+  # Password cannot be reset
+  identity_validation:
+    reset_password:
+      secret:
+        disabled: true
+
+secret:
+  mountPath: /var/run/secrets/authelia.com
+  additionalSecrets:
+    authelia-ldap: {}
+    authelia-oidc: {}
+    authelia-smtp: {}
+
+redis:
+  master:
+    replica:
+      replicaCount: 1
+    pdb:
+      create: false
+  networkPolicy:
+    enabled: false
