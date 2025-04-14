@@ -101,6 +101,18 @@ spec:
                   kind: Application
                   name: external-secrets
 
+              # - KGateway
+              - patch: |
+                  - op: add
+                    path: /spec/sources/1/helm/valueFiles/-
+                    value: $origin/projects/{{ .name }}/src/infrastructure/kubernetes/kgateway/override.helmvalues.yaml
+                  - op: add
+                    path: /spec/sources/1/helm/valueFiles/-
+                    value: $origin/projects/{{ index .metadata.annotations "device.tailscale.com/hostname" | default .name }}/src/infrastructure/kubernetes/kgateway/override.helmvalues.yaml
+                target:
+                  kind: Application
+                  name: kgateway
+
               # - Tailscale
               - patch: |
                   - op: add

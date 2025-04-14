@@ -1,0 +1,50 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kgateway
+spec:
+  destination:
+    namespace: kgateway-system
+    # server: {{ .server }}
+  project: system
+  sources:
+    - ref: origin
+      repoURL: https://github.com/chezmoi-sh/atlas.git
+      targetRevision: refact/use-one-app-by-cluster
+      path: defaults/kubernetes/kgateway/kustomize
+
+      kustomize:
+        {}
+        # components:
+        #   - projects/{{ .name }}/src/infrastructure/kubernetes/kgateway/
+        #   - projects/{{ index .metadata.annotations "device.tailscale.com/hostname" | default .name }}/src/infrastructure/kubernetes/kgateway/
+        # ignoreMissingComponents: true
+    - chart: kgateway
+      helm:
+        ignoreMissingValueFiles: true
+        releaseName: kgateway
+        skipCrds: true # NOTE: skip CRDs because they are installed separately
+        valueFiles:
+          - $origin/defaults/kubernetes/kgateway/helm/default.helmvalues.yaml
+          - $origin/defaults/kubernetes/kgateway/helm/hardened.helmvalues.yaml
+          # - $origin/projects/{{ .name }}/src/infrastructure/kubernetes/kgateway/override.helmvalues.yaml
+          # - $origin/projects/{{ index .metadata.annotations "device.tailscale.com/hostname" | default .name }}/src/infrastructure/kubernetes/kgateway/override.helmvalues.yaml
+      repoURL: ghcr.io/kgateway-dev/charts
+      targetRevision: v2.0.0
+    - chart: kgateway-crds
+      helm:
+        skipCrds: true
+        releaseName: kgateway-crds
+      repoURL: ghcr.io/kgateway-dev/charts
+      targetRevision: v2.0.0
+
+    - repoURL: https://github.com/kubernetes-sigs/gateway-api.git
+      targetRevision: v1.2.1
+      path: config/crd/experimental
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - Delete=confirm
+      - Prune=confirm
+      - ServerSideApply=true

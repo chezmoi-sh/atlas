@@ -1,0 +1,19 @@
+---
+# Hardened Helm values for kgateway
+
+# Security context
+podSecurityContext:
+  fsGroup: 24681
+  runAsGroup: 24681
+  runAsNonRoot: true
+  runAsUser: 24681
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  privileged: false
+  readOnlyRootFilesystem: true

@@ -1,0 +1,75 @@
+---
+apiVersion: gateway.kgateway.dev/v1alpha1
+kind: GatewayParameters
+metadata:
+  name: default-gw-params
+spec:
+  kube:
+    podTemplate:
+      securityContext:
+        fsGroup: 31459
+        runAsGroup: 31459
+        runAsUser: 31459
+        seccompProfile:
+          type: RuntimeDefault
+    envoyContainer:
+      image:
+        registry: ghcr.io
+        repository: kgateway-dev/envoy-wrapper
+        tag: v2.0.0
+        digest: sha256:631bc85f46bc1fff82a02f960a9c374051bdce3ea4a6f7ab271ab781c5d8e30a
+        pullPolicy: IfNotPresent
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        privileged: false
+        runAsNonRoot: true
+    sdsContainer:
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        privileged: false
+        runAsNonRoot: true
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: new-default-gateway
+spec:
+  gatewayClassName: kgateway
+  infrastructure:
+    parametersRef:
+      name: default-gw-params
+      group: gateway.kgateway.dev
+      kind: GatewayParameters
+  listeners:
+    - name: web
+      port: 8080
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: All
+    # - name: websecure
+    #   port: 8443
+    #   protocol: HTTPS
+    #   allowedRoutes:
+    #     namespaces:
+    #       from: All
+# ---
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: wildcard.chezmoi.sh
+# spec:
+#   dnsNames:
+#     - '*.chezmoi.sh'
+#   duration: 2160h0m0s # 90 days
+#   issuerRef:
+#     kind: ClusterIssuer
+#     name: letsencrypt
+#   renewBefore: 360h0m0s # 15 days
+#   secretName: wildcard.chezmoi.sh-certificate

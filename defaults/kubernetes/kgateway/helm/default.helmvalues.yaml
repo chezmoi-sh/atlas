@@ -1,0 +1,8 @@
+---
+# Default Helm values for kgateway
+
+controller:
+  image:
+    registry: ghcr.io
+    repository: kgateway-dev/kgateway
+    tag: v2.0.0@sha256:ee0aaa296e93c43b72cf323e5566945630ba98e0b3cc3df843b33c5063470ee1
