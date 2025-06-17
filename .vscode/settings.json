@@ -1,0 +1,9 @@
+{
+	"go.goroot": "/Users/alexandre/.workspaces/.mise/installs/go/1.24.4",
+	"go.alternateTools": {
+		"go": "/Users/alexandre/.workspaces/.mise/shims/go",
+		"dlv": "/Users/alexandre/.workspaces/.mise/shims/dlv",
+		"gopls": "/Users/alexandre/.workspaces/.mise/shims/gopls"
+	},
+	"sops.binPath": "/Users/alexandre/.workspaces/.mise/shims/sops"
+}

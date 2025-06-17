@@ -308,6 +308,10 @@ const scopes = [
 		value: "project:shodan.akn",
 	},
 	{
+		name: "project:sof.akn       - Anything related to the 'Spirit of Fire' project",
+		value: "project:sof.akn",
+	},
+	{
 		name: "gh                    - Anything else",
 		value: "gh",
 	},
