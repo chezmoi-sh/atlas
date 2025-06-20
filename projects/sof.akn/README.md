@@ -87,36 +87,30 @@ This project uses [ArgoCD](https://argoproj.github.io/cd/) for GitOps-based depl
 
 ## 💀 Disaster Recovery Plan (DRP)
 
-The recovery process is largely automated through the `amiya.akn` project, which hosts ArgoCD and automatically bootstraps any Kubernetes clusters it detects in the Tailscale mesh.
+The recovery process is largely automated through the `amiya.akn` project, which hosts ArgoCD and automatically bootstraps any Kubernetes clusters it detects.
 
-### Automated Recovery Process
+### Recovering process
 
 > \[!NOTE]
 > If the system cannot be managed using Talosctl, reboot on a live CD
 
 1. **Reset/Reinstall Talos OS**:
-   ```bash
-   # If the system is still accessible
-   talosctl reset --nodes $TALOS_NODE_IP --endpoints $TALOS_NODE_IP --graceful=false --reboot
 
-   # Otherwise, reinstall from ISO/PXE and bootstrap the cluster
-   talosctl bootstrap --nodes $TALOS_NODE_IP --endpoints $TALOS_NODE_IP
-   ```
+   See [Talos Recovery](https://docs.talos.dev/v1.10/operations/recovery/) for more information about recovering from a Talos cluster and the [Talos Bootstrap documentation](docs/BOOTSTRAP_TALOS.md) for more information about bootstrapping the cluster.
 
-2. **Install Tailscale Operator** - the only manual step required:
+2. **Link to ArgoCD**:
+
+   > \[!NOTE]
+   > This is only required if the cluster is not already linked to ArgoCD or if the cluster has been reset.\
+   > You also need to have the context `admin@amiya.akn` in your kubeconfig.
+
+   Because this project is designed to be runned in the same "network" as the `amiya.akn` project, we must link the cluster manually to ArgoCD.
+
    ```bash
-   # Install via Helm
-   helm repo add tailscale https://pkgs.tailscale.com/helmcharts
-   helm upgrade --install tailscale-operator tailscale/tailscale-operator \
-     --namespace=tailscale --create-namespace \
-     --set-string oauth.clientId="<OAuth client ID>" \
-     --set-string oauth.clientSecret="<OAuth client secret>" \
-     --wait
+   argocd --kube-context admin@akiya.akn cluster add admin@sof.akn --name sof.akn --label device.tailscale.com/os=linux
    ```
 
 3. **Automatic Detection** - Once the cluster joins the Tailscale mesh, `amiya.akn` detects it automatically
-
-4. **Auto-Bootstrap** - ArgoCD deploys all applications and configurations via GitOps
 
 ### Manual Verification
 

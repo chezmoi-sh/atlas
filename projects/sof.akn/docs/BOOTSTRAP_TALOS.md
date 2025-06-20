@@ -44,7 +44,8 @@ Generate the initial cluster configuration:
 talosctl gen config sof.akn https://kubernetes.sof.akn.chezmoi.sh:6443 \
   --with-secrets secrets.yaml \
   --config-patch @bootstrap/talos/sof-akn-01.patch-config.yaml \
-  --config-patch @bootstrap/talos/sof-akn-01.volumes.yaml
+  --config-patch @bootstrap/talos/sof-akn-01.volumes.yaml \
+  --config-patch @../../../defaults/talos/manifests/tailscale.extensionserviceconfig.yaml~uncrypted
 ```
 
 This will generate the following files:

@@ -44,3 +44,6 @@ catalog/**/result
 
 # pre-commit
 .pre-commit-config.yaml
+
+# Ignore all uncrypted files
+*.yaml~uncrypted
