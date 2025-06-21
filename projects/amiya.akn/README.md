@@ -35,8 +35,14 @@ without[^1] the need of third-party services.
 * **ArgoCD**: GitOps-based deployment tool for Kubernetes. <br/>
   **Why is it mission-critical?** It ensures that all services are deployed and managed in a declarative way, making it easier to maintain and recover from failures.
 
+* **CloudNativePG**: Operator for managing PostgreSQL databases in Kubernetes. <br/>
+  **Why is it mission-critical?** It automates the lifecycle of the PostgreSQL cluster required by Infisical, handling backups, replication, and failover.
+
 * **Crossplane**: Infrastructure as Code (IaC) tool for Kubernetes. <br/>
   **Why is it mission-critical?** It provides a way to manage cloud/3rd party services using the same IaC tools, ensuring consistency and auditability.
+
+* **Infisical**: Centralized secret management platform. <br/>
+  **Why is it mission-critical?** It acts as the single source of truth for all secrets, eliminating dependencies on external services and improving security and resilience. It relies on PostgreSQL for storage and Redis for caching.
 
 * **Talos Omni** *(not deployed)*: Platform for managing Talos Linux clusters. <br/>
   **Why is it mission-critical?** It provides a simplified interface for managing the underlying Talos Linux cluster, ensuring proper cluster operations and maintenance.
@@ -48,9 +54,6 @@ without[^1] the need of third-party services.
 
 * **yaLDAP**: Modern LDAP server. <br/>
   **Why is it mission-critical?** It provides a centralized directory service for user management and authentication.
-
-* **SmallStep CA** *(not deployed)*: Zero-trust certificate authority. <br/>
-  **Why is it mission-critical?** It provides a secure way to manage and issue TLS certificates for all services, ensuring secure communication between components.
 
 ### 🗄️ Storage
 
@@ -162,11 +165,11 @@ First, reinstall Talos Linux on the mini PC following the instructions in [BOOTS
 
 ### 3. Restore Core Services
 
-Once the base cluster is running, restore ArgoCD and core applications:
+Once the base cluster is running, restore core infrastructure:
 
-1. Create necessary secrets for ArgoCD (GitHub integration, SOPS keys)
-2. Deploy ArgoCD using the bootstrap kustomization as detailed in [BOOTSTRAP\_ARGOCD.md](./docs/BOOTSTRAP_ARGOCD.md)
-3. Access ArgoCD UI and ensure applications are syncing properly
+1. **Restore Infisical**: Restore the Infisical database from its backup. This step is critical as it contains all secrets for other services.
+2. **Deploy ArgoCD**: Deploy ArgoCD using the bootstrap kustomization as detailed in [BOOTSTRAP\_ARGOCD.md](./docs/BOOTSTRAP_ARGOCD.md). The required secrets for ArgoCD (like GitHub integration) will be pulled from the restored Infisical instance.
+3. **Sync Applications**: Access the ArgoCD UI and ensure all applications are syncing properly.
 
 ### 4. Verify Recovery
 
@@ -191,6 +194,7 @@ For detailed step-by-step recovery procedures, refer to the bootstrap documentat
   * \[ ] ~~Install and configure all services using only raw Kubernetes manifests~~.
   * \[X] Install and configure all services using raw Kubernetes manifests or public Helm Charts.
 * \[ ] **Step 2**: Improve quality and security.
+  * \[ ] Migrate secret management to Infisical.
   * \[X] Configure k3s to use the ZOT registry as mirror/proxy for all images[^2].
   * \[ ] Make my own images for all services.
   * \[ ] Develop my own Helm charts for all services.

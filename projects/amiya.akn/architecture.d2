@@ -30,10 +30,10 @@ explanation: |md
   with all the components and how they \
   interact with each other.
   \
-  _A service that is not described here is \
-  kubevault, which is a tool for managing \
-  secrets relying on Kubernetes API without any \
-  "component"._
+  _This architecture uses **Infisical** as a centralized \
+  secret management platform. It acts as the single source of truth \
+  for secrets, which are then synced into the cluster by \
+  **External-Secret**._
 | {
   near: top-left
 }
@@ -91,11 +91,29 @@ amiya·akn: {
     tooltip: Authelia is an open-source authentication and authorization server.
   }
 
-  security.SmallStep CA: {
-    class: [application; undeployed]
-    icon: assets/icons/apps/smallstep.png
-    link: https://smallstep.com/
-    tooltip: SmallStep CA is a zero-trust certificate authority.
+  security.infisical-stack: {
+    class: namespace
+    label: Infisical Stack
+    style.fill-pattern: none
+
+    Infisical: {
+      class: [application; undeployed]
+      icon: assets/icons/apps/infisical.svg
+      link: https://infisical.com/
+      tooltip: Infisical is an open-source, end-to-end secret management platform.
+    }
+
+    PostgreSQL: {
+      class: [application-datastore; undeployed]
+      icon: assets/icons/apps/postgresql.svg
+      tooltip: PostgreSQL - Primary database for Infisical, managed by CloudNativePG.
+    }
+
+    Redis: {
+      class: [application-datastore; undeployed]
+      icon: assets/icons/apps/redis.svg
+      tooltip: Redis - In-memory data store, used as a cache by Infisical.
+    }
   }
 
   security.yaLDAP: {
@@ -126,6 +144,13 @@ amiya·akn: {
     icon: assets/icons/system/cert-manager.svg
     link: https://cert-manager.io/
     tooltip: Cert-Manager is a Kubernetes controller that automates the management and issuance of TLS certificates.
+  }
+
+  system.CloudNativePG: {
+    class: [application-system; undeployed]
+    icon: assets/icons/system/cloudnativepg.svg
+    link: https://cloudnative-pg.io/
+    tooltip: CloudNativePG is a Kubernetes operator for PostgreSQL.
   }
 
   system.Cilium: {
@@ -187,11 +212,16 @@ amiya·akn: {
 
 # Connections
 # VPN Connections
-amiya·akn.system.Tailscale <- tailnet: {class: [connect-vpn-trunk]}
-amiya·akn.Tailscale-Connector -> localnet: {class: [connect-vpn-trunk]}
-amiya·akn.Tailscale-Connector <- tailnet: {class: [connect-vpn-trunk]}
+amiya·akn.system.Tailscale <- tailnet: {class: [connect-from-vpn-backbone]}
+amiya·akn.Tailscale-Connector -> localnet: {class: [connect-to-vpn-backbone]}
+amiya·akn.Tailscale-Connector <- tailnet: {class: [connect-from-vpn-backbone]}
 
 # Internal Connections
+amiya·akn.system.External-Secret -> amiya·akn.security.infisical-stack.Infisical: {
+  class: [undeployed]
+  source-arrowhead: HTTP (8080)
+}
+
 amiya·akn.security.yaLDAP <- amiya·akn.security.Authelia: {
   source-arrowhead: LDAP (8389)
 }
@@ -201,15 +231,18 @@ amiya·akn.security.yaLDAP <- amiya·akn.system.Traefik: {
 amiya·akn.security.Authelia <- amiya·akn.system.Traefik: {
   source-arrowhead: HTTP (9091)
 }
-amiya·akn.security.Authelia <- amiya·akn.system.Tailscale: {
-  class: [connect-vpn]
-  source-arrowhead: HTTP (9091)
-}
 
-amiya·akn.security.SmallStep CA <- amiya·akn.system.Traefik: {
-  class: undeployed
-  source-arrowhead: HTTP (9000)
+amiya·akn.security.infisical-stack.Infisical <- amiya·akn.system.Tailscale: {
+  class: [undeployed; connect-from-vpn]
+  source-arrowhead: HTTP (8080)
 }
+amiya·akn.security.infisical-stack.Infisical <- amiya·akn.system.Traefik: {
+  class: [undeployed]
+  source-arrowhead: HTTP (8080)
+}
+amiya·akn.security.infisical-stack.Infisical -> amiya·akn.security.infisical-stack.PostgreSQL: { class: [undeployed]; source-arrowhead: "TCP" }
+amiya·akn.security.infisical-stack.Infisical -> amiya·akn.security.infisical-stack.Redis: { class: [undeployed]; source-arrowhead: "TCP" }
+amiya·akn.system.CloudNativePG -> amiya·akn.security.infisical-stack.PostgreSQL: {class: [undeployed; connect-management]}
 
 amiya·akn.system.Longhorn <- amiya·akn.system.Traefik: {
   source-arrowhead: HTTP (8000)
@@ -233,6 +266,7 @@ amiya·akn.Glance <- amiya·akn.system.Traefik: {
 }
 
 amiya·akn.infrastructure.Talos Omni <- amiya·akn.system.Traefik: {
+  class: [undeployed]
   source-arrowhead: HTTP (443)
 }
 
@@ -245,7 +279,7 @@ amiya·akn.system.Traefik <- localnet: {
 }
 
 amiya·akn.infrastructure.ArgoCD <- amiya·akn.system.Tailscale: {
-  class: [connect-vpn]
+  class: [connect-from-vpn]
   source-arrowhead: HTTP (8080)
 }
 
