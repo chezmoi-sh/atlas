@@ -6,13 +6,13 @@ namespace: argocd
 resources:
   # Configure ArgoCD
   - ../../../src/apps/*argocd/argocd.appprojects.yaml
-  - ../../../src/seed.application.yaml
+  - ../../../src/apps/*argocd/seed.application.yaml
 
 helmCharts:
   - name: argo-cd
     repo: https://argoproj.github.io/argo-helm
     releaseName: argocd
-    version: 8.1.1
+    version: 8.1.0
     valuesFile: ../../../src/apps/*argocd/argocd.helmvalues/default.yaml
     additionalValuesFiles:
       - ../../../src/apps/*argocd/argocd.helmvalues/hardened.yaml

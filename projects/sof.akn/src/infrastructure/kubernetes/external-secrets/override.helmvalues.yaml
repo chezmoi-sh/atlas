@@ -1,0 +1,17 @@
+---
+extraObjects:
+  # NOTE: kubevault is the default secret store for External Secrets Operator.
+  #       Also, in order to make the connection to the secret store, we need to
+  #       use Tailscale as Kubernetes API proxy to allow access to the secret store.
+  # TODO: This is a temporary solution to allow access to the secret store, Vault
+  #       or OpenBao could be a better solution.
+  - apiVersion: external-secrets.io/v1beta1
+    kind: ClusterSecretStore
+    metadata:
+      name: kubevault
+    spec:
+      provider:
+        kubernetes:
+          remoteNamespace: kubevault-kvstore
+          server:
+            url: amiya-akn.tail831c5d.ts.net

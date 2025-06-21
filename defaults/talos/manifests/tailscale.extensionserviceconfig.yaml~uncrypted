@@ -1,0 +1,6 @@
+apiVersion: v1alpha1
+kind: ExtensionServiceConfig
+name: tailscale
+environment:
+  - TS_ACCEPT_DNS=true
+  - TS_AUTHKEY=tskey-client-kJbASYswNu11CNTRL-J9UgJwQekGYJj4x98ebtGYufcQD1ohcz

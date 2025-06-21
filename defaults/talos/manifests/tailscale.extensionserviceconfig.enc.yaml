@@ -1,0 +1,21 @@
+apiVersion: v1alpha1
+kind: ExtensionServiceConfig
+name: tailscale
+environment:
+  - ENC[AES256_GCM,data:On2IDJ+Zvu1G/w7XoLBLx9oW,iv:CINUa3AQtPIjNsEYqo6wWI6DvBMyflr24/w/nPZPBBs=,tag:9QCFieJFkfMlAMEz3lPtiw==,type:str]
+  - ENC[AES256_GCM,data:cT+a/IekT7YQyuSRWE/Ot85afD5aCX8s5wklY/lFcV/FnWVNgK0WJ6EmSgWwa+plkDbDRjOZokg1tRY/aJ2I54tPuoCO1x/lYnc=,iv:0upgtONfMZ68eCv71LgTAbfOZCabh6OjUFa9pzWnpzo=,tag:zHmXAPe/2nZdoVtLvlrOUw==,type:str]
+sops:
+  age:
+    - recipient: age1fj0yj3na3n5udfjmnxfwrlkp80tvj49w80wh699x33dh48clnvnshtjxe9
+      enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBoeWJVeTZGZ3p3N05FbXlt
+        V0hxeW1MOWtyY2NzcHVBcDJSbEsrWUNvekNBCklHNkJFUjg5blNJSTRPY1QwTlZp
+        eW1aUXFyUUlhL2xocmhXZU1UUTgrVDQKLS0tIFM5YmxYUFBHd3YyVFRUQXdJblda
+        N0ZxRCt2cXhYTUcyK1ZwWkVQR1NRalkK7Yb+hIghYpq//PtDbaR3pbR3iS6+ekdR
+        WMwnuAkVOYM4b1FhP51NrDarjwZxFHC6bgXsXGLEasm0XKnqmXaYgA==
+        -----END AGE ENCRYPTED FILE-----
+  lastmodified: "2025-06-20T17:30:06Z"
+  mac: ENC[AES256_GCM,data:HgOCTmo8QYtyUM+fuXCRTF+Yn9pXPt1QipnJu33hcx57pgMS6VYZB+oDdXl5ShN1CeC+tO7FS9i3pRA/XZuas4gpxlYvSDHHAWMFtsbK5Glr9UdNjTpi0NCpQ0e1dUYlisTUbrO8ZvdaQh1kYsJTXmvNGURWovuyn7wyuHoRbds=,iv:ZmyLVLXV02MUL3KBdhgXu8dZgWB2OccKEEL8xoamAoc=,tag:PNy28FLhR6IFDFsvLmeeIA==,type:str]
+  unencrypted_regex: ^(apiVersion|kind|metadata|name)$
+  version: 3.10.2

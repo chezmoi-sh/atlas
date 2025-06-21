@@ -187,9 +187,9 @@ amiya·akn: {
 
 # Connections
 # VPN Connections
-amiya·akn.system.Tailscale <- tailnet: {class: [connect-vpn-trunk]}
-amiya·akn.Tailscale-Connector -> localnet: {class: [connect-vpn-trunk]}
-amiya·akn.Tailscale-Connector <- tailnet: {class: [connect-vpn-trunk]}
+amiya·akn.system.Tailscale <- tailnet: {class: [connect-from-vpn-backbone]}
+amiya·akn.Tailscale-Connector -> localnet: {class: [connect-to-vpn-backbone]}
+amiya·akn.Tailscale-Connector <- tailnet: {class: [connect-from-vpn-backbone]}
 
 # Internal Connections
 amiya·akn.security.yaLDAP <- amiya·akn.security.Authelia: {
@@ -202,7 +202,7 @@ amiya·akn.security.Authelia <- amiya·akn.system.Traefik: {
   source-arrowhead: HTTP (9091)
 }
 amiya·akn.security.Authelia <- amiya·akn.system.Tailscale: {
-  class: [connect-vpn]
+  class: [connect-from-vpn]
   source-arrowhead: HTTP (9091)
 }
 
@@ -245,7 +245,7 @@ amiya·akn.system.Traefik <- localnet: {
 }
 
 amiya·akn.infrastructure.ArgoCD <- amiya·akn.system.Tailscale: {
-  class: [connect-vpn]
+  class: [connect-from-vpn]
   source-arrowhead: HTTP (8080)
 }
 

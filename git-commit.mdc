@@ -1,0 +1,572 @@
+---
+description: Git commit rules for this repository
+globs: 
+alwaysApply: false
+---
+<rule>
+  <meta>
+    <title>Git Commit Rules for Radio France</title>
+    <description>Comprehensive guidelines for creating standardized Git commits following Radio France conventions</description>
+    <created-at utc-timestamp="1750346414">June 19, 2025, 12:00 PM CEST</created-at>
+    <last-updated-at utc-timestamp="1750346414">June 19, 2025, 12:00 PM CEST</last-updated-at>
+    <applies-to>
+      <file-matcher glob="*">All files in the project</file-matcher>
+      <action-matcher action="commit">Triggered when creating Git commits</action-matcher>
+    </applies-to>
+  </meta>
+  <requirements>
+    <requirement priority="critical">
+      <description>All commit messages must be written in English</description>
+      <examples>
+        <example title="Language Usage">
+          <correct-example title="English commit" conditions="Writing commit message" expected-result="Message in English" correctness-criteria="Uses English language">feat(k8s/monitoring): add new dashboard for metrics</correct-example>
+          <incorrect-example title="Non-English commit" conditions="Writing commit message" expected-result="Message in English" incorrectness-criteria="Uses non-English language">feat(k8s/monitoring): ajouter un nouveau tableau de bord</incorrect-example>
+        </example>
+      </examples>
+    </requirement>
+    <requirement priority="critical">
+      <description>Follow the exact commit message format: type(scope): description with required signoff</description>
+      <examples>
+        <example title="Commit Message Structure">
+          <correct-example title="Proper commit format" conditions="Creating a new commit" expected-result="Valid commit message" correctness-criteria="Follows type(scope): description format with signoff">feat(k8s/monitoring): add new grafana dashboard</correct-example>
+          <incorrect-example title="Missing type and scope" conditions="Creating a new commit" expected-result="Valid commit message" incorrectness-criteria="Lacks required type and scope">add new dashboard</incorrect-example>
+        </example>
+      </examples>
+    </requirement>
+    <requirement priority="critical">
+      <description>Use only allowed commit types: bump, clean, doc, feat, fix, hotfix, refact, test, whitelist, wip</description>
+      <examples>
+        <example title="Commit Types">
+          <correct-example title="Valid type" conditions="Creating a feature commit" expected-result="Valid commit type" correctness-criteria="Uses allowed type">feat(terraform/prod): add new vpc configuration</correct-example>
+          <incorrect-example title="Invalid type" conditions="Creating a feature commit" expected-result="Valid commit type" incorrectness-criteria="Uses non-allowed type">feature(terraform/prod): add new vpc configuration</incorrect-example>
+        </example>
+      </examples>
+    </requirement>
+    <requirement priority="critical">
+      <description>Always use --signoff flag when committing</description>
+      <examples>
+        <example title="Signoff Requirement">
+          <correct-example title="With signoff" conditions="Creating a commit" expected-result="Signed commit" correctness-criteria="Includes signoff flag">git commit -s -m "feat(k8s/monitoring): add dashboard"</correct-example>
+          <incorrect-example title="Without signoff" conditions="Creating a commit" expected-result="Signed commit" incorrectness-criteria="Missing signoff flag">git commit -m "feat(k8s/monitoring): add dashboard"</incorrect-example>
+        </example>
+      </examples>
+    </requirement>
+    <requirement priority="high">
+      <description>Use correct scope format based on component: ansible/ROLE, terraform/FOLDER, terragrunt/FOLDER, k8s/PLATFORM</description>
+      <examples>
+        <example title="Component Scopes">
+          <correct-example title="Ansible scope" conditions="Modifying Ansible role" expected-result="Correct scope format" correctness-criteria="Uses ansible/ROLE format">feat(ansible/gitlab): add backup configuration</correct-example>
+          <correct-example title="Terraform scope" conditions="Modifying Terraform" expected-result="Correct scope format" correctness-criteria="Uses terraform/FOLDER format">fix(terraform/prod): correct vpc settings</correct-example>
+          <correct-example title="Terragrunt scope" conditions="Modifying Terragrunt" expected-result="Correct scope format" correctness-criteria="Uses terragrunt/FOLDER format">feat(terragrunt/sand): add new configuration</correct-example>
+          <correct-example title="Kubernetes scope" conditions="Modifying Kapitan" expected-result="Correct scope format" correctness-criteria="Uses k8s/PLATFORM format">fix(k8s/monitoring): correct ingress config</correct-example>
+        </example>
+      </examples>
+    </requirement>
+    <requirement priority="high">
+      <description>Description must start with lowercase, use present imperative, no final period, max 200 characters</description>
+      <examples>
+        <example title="Description Format">
+          <correct-example title="Proper description" conditions="Writing commit description" expected-result="Valid description" correctness-criteria="Lowercase, imperative, no period">feat(k8s/monitoring): add prometheus alerting rules</correct-example>
+          <incorrect-example title="Improper description" conditions="Writing commit description" expected-result="Valid description" incorrectness-criteria="Uppercase, past tense, period">feat(k8s/monitoring): Added Prometheus alerting rules.</incorrect-example>
+        </example>
+      </examples>
+    </requirement>
+    <requirement priority="medium">
+      <description>Create atomic commits - one logical change per commit, separate different components and environments</description>
+      <examples>
+        <example title="Atomic Commits">
+          <correct-example title="Separate environment commits" conditions="Multiple environments changed" expected-result="Separate commits per environment" correctness-criteria="One commit per environment">feat(terraform/privs): allow AKS to access mdlrproxy
+feat(terraform/prods): allow AKS to access mdlrproxy</correct-example>
+          <correct-example title="Separate component commits" conditions="Multiple components changed" expected-result="Separate commits per component" correctness-criteria="One commit per component">feat(k8s/monitoring): add dashboard
+fix(terraform/prod): correct security group</correct-example>
+          <incorrect-example title="Mixed environments commit" conditions="Multiple environments changed" expected-result="Separate commits per environment" incorrectness-criteria="Multiple environments in one commit">feat(terraform): allow AKS to access mdlrproxy in privs and prods</incorrect-example>
+          <incorrect-example title="Mixed component commit" conditions="Multiple components changed" expected-result="Separate commits per component" incorrectness-criteria="Multiple components in one commit">feat(multiple): add dashboard and fix security group</incorrect-example>
+        </example>
+      </examples>
+    </requirement>
+    <requirement priority="critical">
+      <description>For atomic commits, stage only the files relevant to each specific commit to avoid mixing changes</description>
+      <examples>
+        <example title="Staging Workflow for Atomic Commits">
+          <correct-example title="Proper staging sequence" conditions="Multiple environments need separate commits" expected-result="Only relevant files staged per commit" correctness-criteria="Uses selective staging with git add and git restore --staged"><![CDATA[# First commit for privs environment
+git add terraform/privs/mdlrproxy.tf
+git commit -s -m "feat(terraform/privs): allow AKS to access mdlrproxy"
+
+# Second commit for prods environment  
+git add terraform/prods/mdlrproxy.tf
+git commit -s -m "feat(terraform/prods): allow AKS to access mdlrproxy"]]></correct-example>
+          <incorrect-example title="Staging all files together" conditions="Multiple environments need separate commits" expected-result="Only relevant files staged per commit" incorrectness-criteria="Stages multiple environment files together"><![CDATA[# Wrong: staging both environments together
+git add terraform/privs/mdlrproxy.tf terraform/prods/mdlrproxy.tf
+git commit -s -m "feat(terraform): allow AKS to access mdlrproxy"]]></incorrect-example>
+          <correct-example title="Unstaging files when needed" conditions="Files accidentally staged together" expected-result="Correct selective staging" correctness-criteria="Uses git restore --staged to unstage unneeded files"><![CDATA[# If files are accidentally staged together, unstage one
+git restore --staged terraform/prods/mdlrproxy.tf
+git commit -s -m "feat(terraform/privs): allow AKS to access mdlrproxy"
+git add terraform/prods/mdlrproxy.tf  
+git commit -s -m "feat(terraform/prods): allow AKS to access mdlrproxy"]]></correct-example>
+          <incorrect-example title="Committing mixed changes" conditions="Files accidentally staged together" expected-result="Correct selective staging" incorrectness-criteria="Commits mixed changes without unstaging"><![CDATA[# Wrong: committing both environments in one go
+git add terraform/privs/mdlrproxy.tf terraform/prods/mdlrproxy.tf
+git commit -s -m "feat(terraform): allow AKS to access mdlrproxy in both envs"]]></incorrect-example>
+        </example>
+      </examples>
+    </requirement>
+    <requirement priority="medium">
+      <description>Use JIRA ticket format for branches: JIRA_TICKET/description</description>
+      <examples>
+        <example title="Branch Naming">
+          <correct-example title="JIRA branch" conditions="Creating feature branch" expected-result="Proper branch name" correctness-criteria="Uses JIRA format">FOND-1234/add-monitoring-dashboard</correct-example>
+          <incorrect-example title="Generic branch" conditions="Creating feature branch" expected-result="Proper branch name" incorrectness-criteria="Missing JIRA reference">feature/add-dashboard</incorrect-example>
+        </example>
+      </examples>
+    </requirement>
+    <non-negotiable priority="critical">
+      <description>Never update JIRA tickets without user confirmation</description>
+      <examples>
+        <example title="JIRA Updates">
+          <correct-example title="Ask for confirmation" conditions="JIRA ticket update needed" expected-result="User confirmation" correctness-criteria="Asks before updating">Should I update the JIRA ticket status?</correct-example>
+          <incorrect-example title="Auto-update" conditions="JIRA ticket update needed" expected-result="User confirmation" incorrectness-criteria="Updates without asking">I'll update the JIRA ticket status</incorrect-example>
+        </example>
+      </examples>
+    </non-negotiable>
+    <non-negotiable priority="critical">
+      <description>Ask for missing information rather than making assumptions when creating commits</description>
+      <examples>
+        <example title="Information Gathering">
+          <correct-example title="Ask for details" conditions="Missing commit information" expected-result="Complete information" correctness-criteria="Asks specific questions">What type of change is this? (feat, fix, bump, etc.)</correct-example>
+          <incorrect-example title="Assume details" conditions="Missing commit information" expected-result="Complete information" incorrectness-criteria="Makes assumptions">I'll commit this as a feature</incorrect-example>
+        </example>
+      </examples>
+    </non-negotiable>
+    <requirement priority="critical">
+      <description>Never manually add signature lines to commit messages - use Git flags -s for signoff and -S for GPG signature</description>
+      <examples>
+        <example title="Signature Handling">
+          <correct-example title="Use Git flags" conditions="Creating a signed commit" expected-result="Git handles signatures" correctness-criteria="Uses -s and -S flags">git commit -S -s -m "feat(k8s/monitoring): add dashboard"</correct-example>
+          <incorrect-example title="Manual signature" conditions="Creating a signed commit" expected-result="Git handles signatures" incorrectness-criteria="Manually adds signature line">git commit -m "feat(k8s/monitoring): add dashboard
+
+Signed-off-by: User <user@example.com>"</incorrect-example>
+        </example>
+      </examples>
+    </requirement>
+    <requirement priority="medium">
+      <description>Body lines should preferably be 80 characters or less for better readability</description>
+      <examples>
+        <example title="Line Length">
+          <correct-example title="Short lines" conditions="Writing commit body" expected-result="Lines ≤ 80 chars" correctness-criteria="Each line ≤ 80 characters">Open required ports and update security groups to enable Azure AKS
+clusters to communicate with mdlrproxy. This change is needed to
+support new workloads running on AKS that require proxy access.</correct-example>
+          <incorrect-example title="Long lines" conditions="Writing commit body" expected-result="Lines ≤ 80 chars" incorrectness-criteria="Lines > 80 characters">Open required ports and update security groups to enable Azure AKS clusters to communicate with mdlrproxy in privs and prods environments.</incorrect-example>
+        </example>
+      </examples>
+    </requirement>
+    <requirement priority="high">
+      <description>Detailed scope rules for each component type</description>
+      <examples>
+        <example title="Ansible Scopes">
+          <correct-example title="Role specific" conditions="Modifying an Ansible role" expected-result="Valid scope" correctness-criteria="Uses ansible/ROLE format">feat(ansible/gitlab): add backup configuration</correct-example>
+          <correct-example title="Global ansible" conditions="Modifying global Ansible files or playbooks" expected-result="Valid scope" correctness-criteria="Uses ansible scope">fix(ansible): update 00-bootstrap.yml</correct-example>
+          <incorrect-example title="Missing prefix" conditions="Modifying an Ansible role" expected-result="Valid scope" incorrectness-criteria="Missing ansible/ prefix">feat(gitlab): add backup configuration</incorrect-example>
+        </example>
+        <example title="Terraform Scopes">
+          <correct-example title="privs folder" conditions="Modifying terraform/privs/" expected-result="Valid scope" correctness-criteria="Uses terraform/privs as scope">feat(terraform/privs): update mdlrproxy configuration</correct-example>
+          <correct-example title="prods folder" conditions="Modifying terraform/prods/" expected-result="Valid scope" correctness-criteria="Uses terraform/prods as scope">fix(terraform/prods): correct output variable</correct-example>
+          <correct-example title="buckets folder" conditions="Modifying terraform/buckets/" expected-result="Valid scope" correctness-criteria="Uses terraform/buckets as scope">feat(terraform/buckets): add new S3 bucket</correct-example>
+          <correct-example title="modules folder (ambiguous)" conditions="Modifying terraform/modules/" expected-result="User-validated scope" correctness-criteria="Agent proposes terraform/modules and asks user to confirm">feat(terraform/modules): add new shared module</correct-example>
+          <incorrect-example title="Using live folder" conditions="Modifying terraform/live/" expected-result="Valid scope" incorrectness-criteria="Should use terragrunt/ not terraform/live/">fix(terraform/live/prod): update configuration</incorrect-example>
+        </example>
+        <example title="Terragrunt Scopes">
+          <correct-example title="prod folder" conditions="Modifying terraform/live/prod/" expected-result="Valid scope" correctness-criteria="Uses terragrunt/prod as scope">feat(terragrunt/prod): update prod configuration</correct-example>
+          <correct-example title="sand folder" conditions="Modifying terraform/live/sand/" expected-result="Valid scope" correctness-criteria="Uses terragrunt/sand as scope">fix(terragrunt/sand): update backend config</correct-example>
+          <incorrect-example title="Including live in scope" conditions="Modifying terraform/live/prod/" expected-result="Valid scope" incorrectness-criteria="Scope should not include live">feat(terragrunt/live/prod): update prod configuration</incorrect-example>
+        </example>
+        <example title="Kubernetes Scopes">
+          <correct-example title="Platform specific" conditions="Modifying K8s platform" expected-result="Valid scope" correctness-criteria="Uses k8s/PLATFORM format">fix(k8s/monitoring): correct ingress config</correct-example>
+          <incorrect-example title="Missing platform" conditions="Modifying K8s platform" expected-result="Valid scope" incorrectness-criteria="Missing platform specification">fix(k8s): correct ingress config</incorrect-example>
+        </example>
+      </examples>
+    </requirement>
+    <requirement priority="critical">
+      <description>When the scope is not immediately clear, analyze the context to propose a scope but always ask for user validation</description>
+      <examples>
+        <example title="Scope Determination">
+          <correct-example title="Ask for scope validation" conditions="Multiple possible scopes" expected-result="User-validated scope" correctness-criteria="Proposes and validates scope"><![CDATA[# When changes affect terraform/dns/route53.tf
+"I see changes in the DNS configuration. Would you confirm using terraform/dns as the scope?
+Alternative could be terraform/prod if this is environment-specific."]]></correct-example>
+          <correct-example title="Unclear component scope" conditions="Changes across multiple components" expected-result="User-validated scope" correctness-criteria="Lists options and asks for confirmation"><![CDATA[# When changes affect both Ansible and Terraform
+"These changes touch multiple components. Which scope would you prefer:
+- ansible (for the playbook changes)
+- terraform/prod (for the infrastructure changes)
+- Or another scope that better represents the main purpose of these changes?"]]></correct-example>
+          <incorrect-example title="Assuming scope" conditions="Unclear scope" expected-result="User validation" incorrectness-criteria="Makes assumption without asking"><![CDATA[# Wrong: Making assumptions
+"I'll use terraform/prod as the scope since it seems the most relevant"]]></incorrect-example>
+        </example>
+        <example title="Complex Changes">
+          <correct-example title="Multiple scopes suggestion" conditions="Changes requiring multiple commits" expected-result="Clear separation with user validation" correctness-criteria="Proposes logical separation and confirms"><![CDATA[# When changes affect multiple areas
+"I suggest splitting these changes into separate commits:
+1. feat(terraform/dns): update route53 records
+2. feat(ansible/nginx): configure new vhost
+3. feat(k8s/monitoring): add service monitors
+
+Would you agree with this separation and these scopes?"]]></correct-example>
+          <incorrect-example title="Single scope for multiple changes" conditions="Changes requiring multiple commits" expected-result="Proper separation" incorrectness-criteria="Combines unrelated changes"><![CDATA[# Wrong: Combining different scopes
+"I'll commit everything under feat(terraform): update infrastructure"]]></incorrect-example>
+        </example>
+      </examples>
+    </requirement>
+    <requirement priority="critical">
+      <description>If the folder or component is ambiguous (e.g. modules, dashboard, custom), the agent must propose a scope and always ask the user to confirm or adjust it before committing.</description>
+      <examples>
+        <example title="Ambiguous folder">
+          <correct-example title="Ask for confirmation" conditions="Modifying terraform/modules/" expected-result="User-validated scope" correctness-criteria="Agent proposes and asks user to confirm">"I see changes in terraform/modules. Should I use terraform/modules as the scope or do you prefer another?"</correct-example>
+          <incorrect-example title="Assume scope" conditions="Modifying ambiguous folder" expected-result="User-validated scope" incorrectness-criteria="Agent commits without asking">feat(terraform/modules): add new module</incorrect-example>
+        </example>
+      </examples>
+    </requirement>
+    <requirement priority="critical">
+      <description>Every commit MUST include a body. The body can span multiple lines, but each line must be provided as a separate -m argument to git commit. No explicit newline (\n) character is allowed within a single -m argument. Each line should be concise (preferably ≤ 80 characters).</description>
+      <examples>
+        <example title="Body Requirement">
+          <correct-example title="Multi-line body with multiple -m" conditions="Writing commit body" expected-result="Body present, no explicit newline" correctness-criteria="Each line is a separate -m argument, no \n in any -m">
+git commit -s -m "feat(terraform/privs): allow AKS to access mdlrproxy" \
+-m "Open required ports and update security groups to enable Azure AKS clusters to communicate with mdlrproxy." \
+-m "This change is needed to support new workloads running on AKS that require proxy access." \
+-m "Refs: FOND-4708"
+          </correct-example>
+          <incorrect-example title="Body with explicit newline" conditions="Writing commit body" expected-result="Body present, no explicit newline" incorrectness-criteria="Body contains \n or is multi-line within a single -m">
+git commit -s -m "feat(terraform/privs): allow AKS to access mdlrproxy" -m "Open required ports and update security groups to enable Azure AKS\nclusters to communicate with mdlrproxy. This change is needed to\nsupport new workloads running on AKS that require proxy access.\n\nRefs: FOND-4708"
+          </incorrect-example>
+        </example>
+      </examples>
+    </requirement>
+  </requirements>
+  <grammar>
+    <grammar-entry title="Commit Message Pattern">
+      <pattern description="Standard commit message format">^(bump|clean|doc|feat|fix|hotfix|refact|test|whitelist|wip)(\([^)]+\))?: [a-z][^.]{0,198}$</pattern>
+      <example description="Valid commit message">feat(k8s/monitoring): add new grafana dashboard</example>
+    </grammar-entry>
+    <grammar-entry title="Branch Naming Pattern">
+      <pattern description="JIRA ticket branch format">^[A-Z]+-\d+/[a-z0-9-]+$</pattern>
+      <example description="Valid branch name">FOND-1234/add-monitoring-dashboard</example>
+    </grammar-entry>
+    <schema title="Git Commit Schema" description="Complete structure for Git commits">
+<![CDATA[Commit Message Structure:
+type(scope): description
+
+[optional body - max 100 chars per line]
+
+[optional footer - JIRA refs, breaking changes, co-authors]
+
+Required Elements:
+- type: bump|clean|doc|feat|fix|hotfix|refact|test|whitelist|wip
+- scope: 
+  * ansible/ROLE - for changes in ansible/roles/ROLE
+  * ansible - for global ansible changes
+  * terraform/FOLDER - for changes in terraform/FOLDER (except live)
+  * terragrunt/FOLDER - for changes in terraform/live/FOLDER (without live in scope)
+  * k8s/PLATFORM - for changes in kapitan/inventory/classes/platform/PLATFORM
+  * docker/IMAGE - for changes in docker/IMAGE
+  * helm/CHART - for changes in helm/CHART
+  * config/TYPE - for changes in config/TYPE
+- description: lowercase, imperative, no period, max 200 chars
+- signoff: always use -s or --signoff flag
+
+Branch Naming:
+- JIRA format: JIRA_TICKET/description
+- Examples: FOND-1234/add-feature, FOND-5678/fix-bug
+
+Workflow:
+1. Check staged changes
+2. Determine type and scope
+3. Write description
+4. Add signoff
+5. Verify format
+6. Push to remote]]>
+    </schema>
+  </grammar>
+  <context description="Git commit rules ensure consistency across Radio France projects and enable proper tracking of changes through JIRA integration and standardized formatting">
+    These rules apply to all Git operations in Radio France projects. They ensure commits are properly formatted, signed, and traceable. The rules support multiple infrastructure components (Ansible, Terraform, Terragrunt, Kubernetes) with specific scoping conventions for each. Always prioritize asking for clarification over making assumptions when information is missing.
+  </context>
+  <references>
+    <reference as="dependency" href=".cursor/rules/rules.mdc" reason="Follows standard rule format">Base rule format definition</reference>
+  </references>
+  <examples>
+    <example title="Complete Commit Examples">
+      <correct-example title="Simple Commit" conditions="Adding a dashboard" expected-result="Valid commit message" correctness-criteria="Follows all rules"><![CDATA[
+git commit -s -m "feat(monitoring): add azure nodejs dashboard"
+]]></correct-example>
+      <correct-example title="Commit with Body" conditions="Fixing a bug with explanation" expected-result="Valid commit message with body" correctness-criteria="Body separated by empty line, max 100 chars per line"><![CDATA[
+git commit -s -m "fix(matrix/elasticache): increase storage to prevent data eviction" \
+-m "Storage was too small causing frequent evictions and performance issues." \
+-m "Refs: FOND-1234"
+]]></correct-example>
+      <correct-example title="Breaking Change Commit" conditions="Introducing a breaking change" expected-result="Valid commit message with breaking change footer" correctness-criteria="Footer separated by empty line, uses BREAKING CHANGE"><![CDATA[
+git commit -s -m "feat(api): add new authentication system" \
+-m "BREAKING CHANGE: old API tokens are no longer supported.
+Use the new OAuth2 flow for authentication."
+]]></correct-example>
+      <incorrect-example title="Type in uppercase" conditions="Type is not lowercase" expected-result="Lowercase type" incorrectness-criteria="Type is uppercase"><![CDATA[
+Fix(api): correct authentication bug
+]]></incorrect-example>
+      <incorrect-example title="Description with final period" conditions="Description ends with a period" expected-result="No final period" incorrectness-criteria="Description ends with ."><![CDATA[
+feat(api): correct authentication bug.
+]]></incorrect-example>
+      <incorrect-example title="Description with uppercase" conditions="Description starts with uppercase" expected-result="Starts with lowercase" incorrectness-criteria="Description starts with uppercase"><![CDATA[
+feat(api): Correct authentication bug
+]]></incorrect-example>
+      <incorrect-example title="No type" conditions="Missing type" expected-result="Type present" incorrectness-criteria="No type"><![CDATA[
+add new feature
+]]></incorrect-example>
+      <incorrect-example title="Commit too long" conditions="Header exceeds 200 characters" expected-result="Header < 200 chars" incorrectness-criteria="Header too long"><![CDATA[
+feat(api): this is a very long commit message that exceeds the maximum allowed length of 200 characters, which is not allowed and should be split into multiple commits or the message should be shortened to comply with the rules
+]]></incorrect-example>
+      <incorrect-example title="Multiple changes in one commit" conditions="Mixing unrelated changes" expected-result="One logical change per commit" incorrectness-criteria="Multiple changes in one commit"><![CDATA[
+feat(multiple): add monitoring, fix nginx, update docs and bump versions
+]]></incorrect-example>
+      <incorrect-example title="No signoff" conditions="Missing signoff flag" expected-result="Commit with signoff" incorrectness-criteria="No -s or --signoff flag"><![CDATA[
+git commit -m "feat(api): add authentication"
+]]></incorrect-example>
+      <incorrect-example title="Ambiguous scope" conditions="Scope is unclear or missing" expected-result="Clear scope" incorrectness-criteria="Scope is ambiguous or missing"><![CDATA[
+feat(): add new feature
+]]></incorrect-example>
+      <incorrect-example title="No body when needed" conditions="Complex change without explanation" expected-result="Body explaining the why" incorrectness-criteria="No body provided"><![CDATA[
+fix(matrix/elasticache): increase storage to prevent data eviction
+]]></incorrect-example>
+    </example>
+    <example title="Branch Naming Types">
+      <correct-example title="Feature branch" conditions="Creating a feature branch" expected-result="Valid branch name" correctness-criteria="Uses feature/description or JIRA_TICKET/description">feature/add-new-api
+FOND-1234/add-monitoring-dashboard</correct-example>
+      <correct-example title="Hotfix branch" conditions="Creating a hotfix branch" expected-result="Valid branch name" correctness-criteria="Uses hotfix/description or JIRA_TICKET/description">hotfix/fix-urgent-bug
+FOND-5678/fix-ssl-certificate-renewal</correct-example>
+      <correct-example title="Release branch" conditions="Creating a release branch" expected-result="Valid branch name" correctness-criteria="Uses release/version">release/1.2.3</correct-example>
+      <incorrect-example title="No type in branch" conditions="Branch name missing type or JIRA" expected-result="Type or JIRA present" incorrectness-criteria="No type or JIRA"><![CDATA[
+add-dashboard
+]]></incorrect-example>
+      <incorrect-example title="Uppercase in branch name" conditions="Branch name contains uppercase letters" expected-result="Lowercase only" incorrectness-criteria="Uppercase in branch"><![CDATA[
+FOND-1234/Add-Dashboard
+]]></incorrect-example>
+      <incorrect-example title="No JIRA or type" conditions="Branch name is too generic" expected-result="JIRA or type present" incorrectness-criteria="Generic branch name"><![CDATA[
+update
+]]></incorrect-example>
+    </example>
+    <example title="Complete Commit Message Structure">
+      <correct-example title="Header + Body + Footer" conditions="Changement non trivial dans terraform/privs" expected-result="Message structuré et explicite" correctness-criteria="En-tête, body explicatif, footer JIRA"><![CDATA[
+feat(terraform/privs): update mdlrproxy configuration
+
+Open required ports and update security groups to enable Azure AKS
+clusters to communicate with mdlrproxy. This change is needed to
+support new workloads running on AKS that require proxy access.
+
+Refs: FOND-4708
+      ]]></correct-example>
+      <correct-example title="Header + Body (breaking change)" conditions="Changement majeur dans terragrunt/prod" expected-result="Message structuré avec breaking change" correctness-criteria="En-tête, body, BREAKING CHANGE"><![CDATA[
+feat(terragrunt/prod): migrate to new network layout
+
+All subnets and routing tables have been restructured to support the
+new multi-region architecture. Existing resources will be destroyed and
+recreated. Please review the migration guide before applying in prod.
+
+BREAKING CHANGE: Existing state will be lost. See docs/migration/network.md
+      ]]></correct-example>
+      <incorrect-example title="Pas de body" conditions="Changement complexe" expected-result="Body explicatif" incorrectness-criteria="Message sans explication"><![CDATA[
+feat(terraform/privs): update mdlrproxy configuration
+      ]]></incorrect-example>
+    </example>
+  </examples>
+  <context description="Additional workflow, checklist, and useful commands for Git commits at Radio France">
+    <![CDATA[
+    Pre-Commit Checklist:
+    1. Type is in the allowed list
+    2. Description starts with lowercase, no final period
+    3. Header length < 200 characters
+    4. Scope follows specific rules (ansible/, k8s/, terraform parent folder, etc.)
+    5. Atomicity: only one logical change per commit
+    6. Signoff with -s or --signoff
+    7. GPG signature if configured with -S
+    8. Ajouter un body explicatif si le changement n'est pas trivial
+
+    Useful Git Commands:
+    # Check format before commit
+    npx commitlint --from HEAD~1 --to HEAD --verbose
+
+    # Commit template with signature
+    git commit -S -s -m "<message>" -m "<body>"
+
+    # Modify last commit (before push)
+    git commit --amend -s -m "<message>" -m "<body>"
+
+    # View formatted commit history
+    git log --oneline --no-merges -10
+    ]]>
+  </context>
+  <utilities>
+    <section title="Pre-commit Checklist">
+      <checklist>
+        <item priority="critical">Verify commit type is from allowed list</item>
+        <item priority="critical">Ensure scope follows component-specific format</item>
+        <item priority="critical">Check description format (lowercase, imperative, no period)</item>
+        <item priority="critical">Confirm single logical change per commit</item>
+        <item priority="critical">Include proper signoff (-s flag)</item>
+        <item priority="critical">Validate context with user</item>
+        <item priority="critical">No JIRA updates without explicit agreement</item>
+        <item priority="critical">Ajouter un body explicatif si le changement n'est pas trivial</item>
+      </checklist>
+    </section>
+    <section title="Useful Commands">
+      <command-group>
+        <command title="Format Check">
+          <syntax>npx commitlint --from HEAD~1 --to HEAD --verbose</syntax>
+          <description>Check commit message format before pushing</description>
+        </command>
+        <command title="Signed Commit">
+          <syntax>git commit -S -s -m "feat(terraform/privs): allow AKS to access mdlrproxy"</syntax>
+          <description>Create a signed commit with proper format</description>
+        </command>
+        <command title="Multi-line Commit">
+          <syntax><![CDATA[git commit -s -m "fix(matrix/elasticache): increase storage to prevent data eviction" \
+-m "Storage was too small causing frequent evictions and performance issues." \
+-m "Refs: FOND-1234"]]></syntax>
+          <description>Create a commit with header, body, and footer</description>
+        </command>
+        <command title="Amend Commit">
+          <syntax>git commit --amend -s</syntax>
+          <description>Modify last commit (before push) and ensure signoff</description>
+        </command>
+        <command title="View History">
+          <syntax>git log --oneline --no-merges -10</syntax>
+          <description>View formatted commit history</description>
+        </command>
+      </command-group>
+    </section>
+    <section title="Important Reminders">
+      <reminder-list>
+        <reminder priority="critical">Always validate context with user before committing</reminder>
+        <reminder priority="critical">Never update JIRA tickets without explicit confirmation</reminder>
+        <reminder priority="critical">Always ask for clarification rather than making assumptions</reminder>
+        <reminder priority="high">Split commits into small, logical chunks</reminder>
+        <reminder priority="critical">Use English for all commit messages</reminder>
+      </reminder-list>
+    </section>
+    <section title="Practical Commit Workflow">
+      <description>How to commit a file in terraform/ or terraform/live/ following the rules</description>
+      <workflow-example>
+        <case title="Terraform (ex: privs)">
+          <steps>
+            <step>git status</step>
+            <step>git add terraform/privs/mdlrproxy.tf</step>
+            <step>git commit -S -s -m "feat(terraform/privs): update mdlrproxy configuration"</step>
+            <step>git show</step>
+            <step>git push</step>
+          </steps>
+        </case>
+        <case title="Terragrunt (ex: prod)">
+          <steps>
+            <step>git add terraform/live/prod/monfichier.tf</step>
+            <step>git commit -S -s -m "feat(terragrunt/prod): update prod configuration"</step>
+          </steps>
+        </case>
+      </workflow-example>
+    </section>
+  </utilities>
+  <workflow>
+    <section title="Standard Commit Workflow">
+      <step number="1" priority="critical">
+        <title>Analyze Changes</title>
+        <description>Review all modified files and understand the scope of changes</description>
+        <action>git status</action>
+        <action>git diff</action>
+      </step>
+      <step number="2" priority="critical">
+        <title>Determine Context and Scope</title>
+        <description>Identify which component and environment is being modified, analyze the context if scope is not immediately clear</description>
+        <workflow>
+          <action>Review modified files and their locations</action>
+          <action>Identify primary component(s) affected</action>
+          <action>If scope is unclear:
+            1. Analyze the context and purpose of changes
+            2. List possible relevant scopes
+            3. Propose most appropriate scope with explanation
+            4. Always ask for user validation
+            5. Consider splitting into multiple commits if changes affect different components</action>
+        </workflow>
+        <validation>Confirm with user the intended scope of changes</validation>
+        <validation>Get user approval for proposed commit separation if multiple scopes are involved</validation>
+      </step>
+      <step number="3" priority="high">
+        <title>Split Changes</title>
+        <description>Separate changes into logical, atomic commits</description>
+        <action>git add -p</action>
+        <action>git restore --staged</action>
+      </step>
+      <step number="4" priority="critical">
+        <title>Format Message</title>
+        <description>Create commit message following the type(scope): description format</description>
+        <validation>Verify type is from allowed list</validation>
+        <validation>Ensure scope matches component conventions</validation>
+        <validation>Check description format (lowercase, imperative)</validation>
+      </step>
+      <step number="5" priority="critical">
+        <title>Add Signatures</title>
+        <description>Include required signoff and optional GPG signature</description>
+        <action>git commit -s</action>
+        <action>git commit -S -s</action>
+      </step>
+      <step number="6" priority="high">
+        <title>Verify Commit</title>
+        <description>Review the commit for compliance with all rules</description>
+        <action>git show</action>
+        <action>npx commitlint --from HEAD~1 --to HEAD --verbose</action>
+      </step>
+    </section>
+  </workflow>
+  <examples>
+    <example title="Complex Commit Scenarios">
+      <correct-example title="Breaking Change with Details" conditions="Major API change" expected-result="Clear breaking change notification" correctness-criteria="Proper format with breaking change notice"><![CDATA[
+# Commit with breaking change and migration instructions
+git commit -s -m "feat(api/auth): replace token-based auth with OAuth2" \
+-m "BREAKING CHANGE: Token-based authentication is completely removed." \
+-m "Migration steps:
+1. Generate OAuth2 credentials in the new portal
+2. Update client configurations to use OAuth2
+3. Replace all token calls with OAuth2 flow
+
+For detailed migration guide, see: docs/migration/auth-v2.md"
+      ]]></correct-example>
+      <correct-example title="Complex Fix with Context" conditions="Bug fix with multiple implications" expected-result="Clear explanation of fix" correctness-criteria="Provides context and impact"><![CDATA[
+# Commit with detailed explanation and references
+git commit -s -m "fix(terraform/prod): correct IAM permissions for EKS nodes" \
+-m "The EKS worker nodes had insufficient permissions to:
+- Pull images from ECR
+- Write CloudWatch logs
+- Access required SSM parameters
+
+This fixes the permission issues by:
+1. Adding specific ECR pull permissions
+2. Granting CloudWatch logs write access
+3. Allowing read access to /prod/ SSM path" \
+-m "Refs: FOND-1234, FOND-1235
+Related to: #123, #124
+Testing: Validated in sandbox environment"
+      ]]></correct-example>
+      <correct-example title="Refactoring with Impact" conditions="Major code restructuring" expected-result="Clear explanation of changes" correctness-criteria="Details impact and testing"><![CDATA[
+# Complex refactoring commit
+git commit -s -m "refact(k8s/monitoring): restructure alerting rules" \
+-m "Complete restructuring of Prometheus alerting rules:
+- Organize rules by service/component
+- Standardize alert naming convention
+- Adjust thresholds based on 6-month metrics
+- Add runbooks for each alert
+
+Impact:
+- Alert names will change (breaking change for external tools)
+- Some alerts will have different thresholds
+- Better organization and maintainability
+
+Testing:
+- Validated in preprod for 1 week
+- No false positives observed
+- Alert delivery confirmed" \
+-m "BREAKING CHANGE: Alert names and structure have changed
+Migration guide: docs/monitoring/alert-migration-v2.md"
+      ]]></correct-example>
+    </example>
+  </examples>
+</rule>
